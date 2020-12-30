@@ -62,58 +62,28 @@ const float temp_a[] = {
 	-58.996, -60.389, -61.891, -62.901, -64.612, -66.123, -67.390, -69.114, -70.573, -72.132,
 };
 
-uint16_t ADC_buff[10] = 0;
-           
+//uint16_t ADC_buff[10] = 0;
 
 
-float get_Humi(uint8_t _id)
+
+
+
+float get_Humi(uint8_t _adc)
 {
-    uint8_t  i = 0; 
-    uint16_t t = 0;
     float humi;
 
-    for(i = 0; i < 10; i++) 
-    {
-        ADC_buff[i] = getADCvalue(HUMI_ADC_CHANNEL);
-    }
-
-    BubleSort(ADC_buff, 9);
-
-    for(i = 2; i < 8; i++) 
-    {
-        t += ADC_buff[i];
-    }
-
-    t = t / 6;
-
-    humi = -(16.44/0.6489)+(100/0.6489)*((float)t/1024.0);
+    humi = -(16.44/0.6489)+(100/0.6489)*((float)_adc/1024.0);
     // humi = 0.181*humi-36.481;
 
     return humi;
 }
 
-float get_Temp(uint8_t _id)
+float get_Temp(uint8_t _adc)
 {
     uint8_t  i = 0; 
-    uint16_t t = 0;
     float temp;
 
-    for(i = 0; i < 10; i++) 
-    {
-        ADC_buff[i] = getADCvalue(TEMP_ADC_CHANNEL);
-    }
-
-    BubleSort(ADC_buff, 9);
-
-    for(i = 2; i < 8; i++) 
-    {
-        t += ADC_buff[i];
-    }
-
-    t = t / 6;
-
-
-    temp = (float)t * 5.0 / 1024.0; 
+    temp = (float)_adc * 5.0 / 1024.0; 
 
     if(temp < temp_vol[0])
     {

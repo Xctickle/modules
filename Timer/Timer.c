@@ -84,7 +84,7 @@ void SetTIM2forInt(uint32_t _ulPeriod)
 	if (uiCount > 65535)  /* 计算期望的计数时钟个数, 由于TIM2是16位的定时器，因此如果该值大于65535，则需要进行分频 */			
 	{
 		/* 打印出错的源代码文件名、函数名称 */
-		MODULES_Printf("Error: file %s, function %s()\r\n", __FILE__, __FUNCTION__);
+		//MODULES_Printf("Error: file %s, function %s()\r\n", __FILE__, __FUNCTION__);
 		while(1); /* 参数异常，死机等待看门狗复位 */
 	}
 	TIM2_DeInit();                  					/* 复位TIM2所有寄存器 */
@@ -126,7 +126,7 @@ void SetTIM4forInt(uint32_t _ulPeriod)
 	if (uiCount > 255)  /* 计算期望的计数时钟个数, 由于TIM4是8位的定时器，因此如果该值大于255，则需要进行分频 */			
 	{
 		/* 打印出错的源代码文件名、函数名称 */
-		MODULES_Printf("Error: file %s, function %s()\r\n", __FILE__, __FUNCTION__);
+		//MODULES_Printf("Error: file %s, function %s()\r\n", __FILE__, __FUNCTION__);
 		while(1); /* 参数异常，死机等待看门狗复位 */
 	}
 	TIM4_DeInit();                  					/* 复位TIM4所有寄存器 */

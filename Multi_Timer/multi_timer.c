@@ -6,7 +6,7 @@
 #include "multi_timer.h"
 
 //timer handle list head.
-static struct Timer* head_handle = NULL;
+static struct Timer* head_handle = ((void *)0);
 
 //Timer ticks
 static uint32_t _timer_ticks = 0;

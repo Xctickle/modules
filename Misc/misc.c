@@ -20,9 +20,9 @@ bool CheckCrc(unsigned char *data1, unsigned char nbrOfBytes, unsigned char chec
 	}
 
 	if (crc != checksum) 
-		return FALSE;
+		return 0;
 	else 
-		return TRUE;
+		return 1;
 }
 
 void BubleSort(uint16_t a[], uint8_t n)

@@ -25,7 +25,7 @@
 
 
 // #define C51
-#define STM8S105
+// #define STM8S105
 
 #if defined (C51)
 

@@ -16,22 +16,22 @@
 
 
 
-#define	CS_HIGH	 	 (GPIO_WriteHigh(GPIOC, GPIO_PIN_3))
-#define	CS_LOW  	 (GPIO_WriteLow(GPIOC, GPIO_PIN_3))
-#define	CS_REV  	 (GPIO_WriteReverse(GPIOC, GPIO_PIN_3))
+#define	CS_HIGH	 	 (GPIO_WriteHigh(GPIOC, GPIO_PIN_6))
+#define	CS_LOW  	 (GPIO_WriteLow(GPIOC, GPIO_PIN_6))
+#define	CS_REV  	 (GPIO_WriteReverse(GPIOC, GPIO_PIN_6))
 
-#define	SID_HIGH	 (GPIO_WriteHigh(GPIOC, GPIO_PIN_2))
-#define	SID_LOW  	 (GPIO_WriteLow(GPIOC, GPIO_PIN_2))
-#define	SID_REV  	 (GPIO_WriteReverse(GPIOC, GPIO_PIN_2))
+#define	SID_HIGH	 (GPIO_WriteHigh(GPIOC, GPIO_PIN_5))
+#define	SID_LOW  	 (GPIO_WriteLow(GPIOC, GPIO_PIN_5))
+#define	SID_REV  	 (GPIO_WriteReverse(GPIOC, GPIO_PIN_5))
 
-#define	CLK_HIGH	 (GPIO_WriteHigh(GPIOC, GPIO_PIN_1))
-#define	CLK_LOW  	 (GPIO_WriteLow(GPIOC, GPIO_PIN_1))
-#define	CLK_REV  	 (GPIO_WriteReverse(GPIOC, GPIO_PIN_1))
+#define	CLK_HIGH	 (GPIO_WriteHigh(GPIOC, GPIO_PIN_4))
+#define	CLK_LOW  	 (GPIO_WriteLow(GPIOC, GPIO_PIN_4))
+#define	CLK_REV  	 (GPIO_WriteReverse(GPIOC, GPIO_PIN_4))
 
 
-#define	SET_CS_OUT       (GPIO_Init(GPIOC,GPIO_PIN_3,GPIO_MODE_OUT_PP_HIGH_FAST))
-#define	SET_SID_OUT      (GPIO_Init(GPIOC,GPIO_PIN_2,GPIO_MODE_OUT_PP_HIGH_FAST))
-#define	SET_CLK_OUT      (GPIO_Init(GPIOC,GPIO_PIN_1,GPIO_MODE_OUT_PP_HIGH_FAST))
+#define	SET_CS_OUT       (GPIO_Init(GPIOC,GPIO_PIN_6,GPIO_MODE_OUT_PP_HIGH_FAST))
+#define	SET_SID_OUT      (GPIO_Init(GPIOC,GPIO_PIN_5,GPIO_MODE_OUT_PP_HIGH_FAST))
+#define	SET_CLK_OUT      (GPIO_Init(GPIOC,GPIO_PIN_4,GPIO_MODE_OUT_PP_HIGH_FAST))
 
 
 extern void Delay_us(uint8_t t);

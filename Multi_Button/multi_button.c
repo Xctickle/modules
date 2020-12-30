@@ -11,7 +11,7 @@
 #define EVENT_CB(ev)   if(handle->cb[ev])handle->cb[ev]((Button*)handle)
 	
 //button handle list head.
-static struct Button* head_handle = NULL;
+static struct Button* head_handle = ((void *)0);
 
 /**
   * @brief  Initializes the button struct handle.
@@ -22,7 +22,7 @@ static struct Button* head_handle = NULL;
   */
 void button_init(struct Button* handle, uint8_t(*pin_level)(), uint8_t active_level)
 {
-	memset(handle, 0, sizeof(struct Button));
+	//memset(handle, 0, sizeof(struct Button));
 	handle->event = (uint8_t)NONE_PRESS;
 	handle->hal_button_Level = pin_level;
 	handle->button_level = handle->hal_button_Level();
