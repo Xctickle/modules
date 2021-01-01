@@ -120,6 +120,7 @@ void adc_loop(void)
         }
         else
         {
+            exc_handle->adc_value[SAMP_COUNT - 1 - exc_handle->samp_count] = ADC1_GetConversionValue();
             exc_handle->samp_count = SAMP_COUNT;
             exc_handle = exc_handle->next;
         }

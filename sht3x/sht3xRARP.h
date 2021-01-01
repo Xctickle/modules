@@ -9,8 +9,8 @@
 
 
 
-float get_Humi(uint8_t _id);
-float get_Temp(uint8_t _id);
+float get_Humi(uint16_t _id);
+float get_Temp(uint16_t _id);
 
 
 

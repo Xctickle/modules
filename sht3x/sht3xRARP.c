@@ -68,17 +68,23 @@ const float temp_a[] = {
 
 
 
-float get_Humi(uint8_t _adc)
+float get_Humi(uint16_t _adc)
 {
     float humi;
+	// float vol;
+
+    // vol = (float)_adc * 5.0 / 1024.0; 
+
 
     humi = -(16.44/0.6489)+(100/0.6489)*((float)_adc/1024.0);
     // humi = 0.181*humi-36.481;
 
+    // return vol;
     return humi;
+
 }
 
-float get_Temp(uint8_t _adc)
+float get_Temp(uint16_t _adc)
 {
     uint8_t  i = 0; 
     float temp;
@@ -96,6 +102,11 @@ float get_Temp(uint8_t _adc)
             }
         }
     }
+	else
+	{
+		temp = 200;
+	}
+	
 
     return temp;
 }
