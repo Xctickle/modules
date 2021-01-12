@@ -75,9 +75,11 @@ float get_Humi(uint16_t _adc)
 
     // vol = (float)_adc * 5.0 / 1024.0; 
 
+                        
 
-    humi = -(16.44/0.6489)+(100/0.6489)*((float)_adc/1024.0);
-    // humi = 0.181*humi-36.481;
+    humi = -(16.44/0.6489)+(100/0.6489)*((float)_adc/1024.0);		//r1rp
+    // humi = 0.181*humi-36.481;							//rarp
+	// humi[n] = -(19.7/0.54)+(100/0.54)*(Vol_Buf[m]/1024);		//rarp
 
     // return vol;
     return humi;

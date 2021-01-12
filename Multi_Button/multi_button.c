@@ -139,7 +139,13 @@ void button_handler(struct Button* handle)
 		if(handle->button_level == handle->active_level) {
 			//continue hold trigger
 			handle->event = (uint8_t)LONG_PRESS_HOLD;
-			EVENT_CB(LONG_PRESS_HOLD);
+			if (handle->ticks > SHORT_TICKS)
+			{
+				handle->ticks = 0;
+				EVENT_CB(LONG_PRESS_HOLD);
+			}
+			
+			// EVENT_CB(LONG_PRESS_HOLD);
 
 		} else { //releasd
 			handle->event = (uint8_t)PRESS_UP;
