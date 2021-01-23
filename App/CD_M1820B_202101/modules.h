@@ -19,15 +19,7 @@
 // #include <stdlib.h>
 // #include <string.h>
 
-// #include "sc92f732x_c.h"
-#include "stm8s.h"
-
-
-
-// #define C51
-// #define STM8S105
-
-#if defined (C51)
+#include "sc92f732x_c.h"
 
 /*!< Signed integer types  */
 typedef   signed char     int8_t;
@@ -39,21 +31,29 @@ typedef unsigned char     uint8_t;
 typedef unsigned short    uint16_t;
 typedef unsigned long     uint32_t;
 
+#define IC_DS18B20
+#ifdef IC_DS18B20
+	#define	DQ2_SET() 	 		P20 = 1
+	#define	DQ2_CLR()	 		P20 = 0
+	#define	DQ2_RED()  	 		P20
+	#define DQ2_IN()            P2CON &= ~0x01
+	#define DQ2_OUT()           P2CON |= 0x01
+#endif
+
+#define IC_TM1652
+#ifdef IC_TM1652
+	#define TM1652_LEADING_ZERO 	FALSE
+	#define TM1652_WRITE_DATA(d)   uartSendByte(d)  //串口19200波特率
+	#define TM1652_WRITE_INIT()    uart0Init()
+#endif
+
+
+
+
+
 #define ENABLE_INT()	EA = 1
 #define DISABLE_INT()	EA = 0
-
 #define NOP()			_nop_()					
-
-#endif
-
-#if defined (STM8S105)
-
-#define ENABLE_INT()	enableInterrupts()		/* 使能全局中断 */
-#define DISABLE_INT()	disableInterrupts() 	/* 禁止全局中断 */
-#define FEED_WDG()		nop()					/* 喂狗 */
-#define NOP()			nop()					
-
-#endif
 
 
 #if 0	/* 1表示使能调试语句， 0 表示不参与编译，不会影响编译结果 */

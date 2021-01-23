@@ -44,7 +44,14 @@ typedef enum
 * 函数的的形参都以下划线_开头，已示与普通变量进行区分，对于没有形参为空的函数(void)括号紧跟函数后面。
     > uint32_t uartConvUartBaud(uint32_t _ulBaud)
 
-
+## 函数头描述
+```c
+/**
+  * @brief  Enables or Disables the ADC1 peripheral.
+  * @param   NewState: specifies the peripheral enabled or disabled state.
+  * @retval None
+  */
+```
 ## 常见缩写
 > 较短的单词可通过去掉“元音”形成缩写；较长的单词可取单词的头几个字母形成缩写
 - temp 可缩写为 tmp;
@@ -52,3 +59,5 @@ typedef enum
 - statistic 可缩写为 stat;
 - increment 可缩写为 inc;
 - message 可缩写为 msg;
+
+

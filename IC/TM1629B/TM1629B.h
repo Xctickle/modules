@@ -1,7 +1,7 @@
 #ifndef __TM1629B_H_
 #define __TM1629B_H_
 
-#include "SC92F732x_C.h"
+#include "modules.h"
 
  
 

@@ -44,3 +44,19 @@ void BubleSort(uint16_t a[], uint8_t n)
     }
 }
 
+/**
+  * @brief  计算一个字节内1的数量
+  * @param  待计算字节
+  * @retval 1的数量
+  */
+unsigned int FindOneInNumber_02(unsigned char x)
+{
+   unsigned int n;
+
+   for(n=0; x; n++)
+
+      x &= x-1;
+
+    return n;
+
+}
