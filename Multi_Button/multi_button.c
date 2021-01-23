@@ -3,15 +3,12 @@
  * All rights reserved
  */
 
-
-#include "modules.h"
 #include "multi_button.h"
 
-
 #define EVENT_CB(ev)   if(handle->cb[ev])handle->cb[ev]((Button*)handle)
-	
+
 //button handle list head.
-static struct Button* head_handle = ((void *)0);
+static struct Button* head_handle = NULL;
 
 /**
   * @brief  Initializes the button struct handle.
@@ -22,7 +19,7 @@ static struct Button* head_handle = ((void *)0);
   */
 void button_init(struct Button* handle, uint8_t(*pin_level)(), uint8_t active_level)
 {
-	//memset(handle, 0, sizeof(struct Button));
+	memset(handle, 0, sizeof(struct Button));
 	handle->event = (uint8_t)NONE_PRESS;
 	handle->hal_button_Level = pin_level;
 	handle->button_level = handle->hal_button_Level();
@@ -96,8 +93,8 @@ void button_handler(struct Button* handle)
 			handle->state = 2;
 
 		} else if(handle->ticks > LONG_TICKS) {
-			handle->event = (uint8_t)LONG_RRESS_START;
-			EVENT_CB(LONG_RRESS_START);
+			handle->event = (uint8_t)LONG_PRESS_START;
+			EVENT_CB(LONG_PRESS_START);
 			handle->state = 5;
 		}
 		break;
@@ -106,7 +103,7 @@ void button_handler(struct Button* handle)
 		if(handle->button_level == handle->active_level) { //press down again
 			handle->event = (uint8_t)PRESS_DOWN;
 			EVENT_CB(PRESS_DOWN);
-			handle->repeat++;			
+			handle->repeat++;
 			EVENT_CB(PRESS_REPEAT); // repeat hit
 			handle->ticks = 0;
 			handle->state = 3;
@@ -139,13 +136,7 @@ void button_handler(struct Button* handle)
 		if(handle->button_level == handle->active_level) {
 			//continue hold trigger
 			handle->event = (uint8_t)LONG_PRESS_HOLD;
-			if (handle->ticks > SHORT_TICKS)
-			{
-				handle->ticks = 0;
-				EVENT_CB(LONG_PRESS_HOLD);
-			}
-			
-			// EVENT_CB(LONG_PRESS_HOLD);
+			EVENT_CB(LONG_PRESS_HOLD);
 
 		} else { //releasd
 			handle->event = (uint8_t)PRESS_UP;
