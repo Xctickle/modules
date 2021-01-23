@@ -79,7 +79,9 @@ void timer_loop()
 
     for(target = head_handle; target; target = target->next)
     {
-        if(_timer_ticks >= target->timeout)
+        // if(_timer_ticks >= target->timeout)
+        //fix bug when ticks overflow
+        if((int)((uint32_t)(target->timeout -_timer_ticks)) <= 0) 
         {
             if(target->repeat == 0)
             {
