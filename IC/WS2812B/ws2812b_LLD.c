@@ -8,7 +8,7 @@ unsigned char LedsArray[NB_LEDS * 3];
 unsigned int nbLedsBytes = NB_LEDS * 3;
 extern unsigned char NodeId;
 
-unsigned char brightness = 1;
+unsigned char brightness = 0;
 
 
 const RGBColor_t RED            = {255,0,0};
@@ -19,21 +19,29 @@ const RGBColor_t MAGENTA        = {255,0,255};
 const RGBColor_t BLACK          = {0,0,0};
 const RGBColor_t WHITE          = {255,255,255};
 
-void setBrightness(uint8_t b) 
+void setBrightness(unsigned char b) 
 {
-    uint8_t newBrightness = b + 1;
-    uint8_t  c;
-    uint8_t *ptr           = LedsArray;
-    uint8_t  oldBrightness = brightness - 1; // De-wrap old brightness value
-    uint16_t scale, i;
+    unsigned char newBrightness;
+    unsigned char  c;
+    unsigned char *ptr;
+    unsigned char  oldBrightness;
+    unsigned int scale, i;
+
+	newBrightness = b + 1;
+    oldBrightness = brightness - 1; // De-wrap old brightness value
+    ptr = LedsArray;
+
 
 	if(newBrightness != brightness) 
 	{ // Compare against prior value
 		// Brightness has changed -- re-scale existing data in RAM
 
-		if(oldBrightness == 0) scale = 0; // Avoid /0
-		else if(b == 255) scale = 65535 / oldBrightness;
-		else scale = (((uint16_t)newBrightness << 8) - 1) / oldBrightness;
+		if(oldBrightness == 0) 
+			scale = 0; // Avoid /0
+		else if(b == 255) 
+			scale = 65535 / oldBrightness;
+		else 
+			scale = (((unsigned int)newBrightness << 8) - 1) / oldBrightness;
 		for(i=0; i<3; i++) 
 		{
 			c      = *ptr;
@@ -45,18 +53,17 @@ void setBrightness(uint8_t b)
 
 void rgb_SetColor(unsigned char LedId, RGBColor_t Color)
 {
-  if(LedId > NB_LEDS ) return; //to avoid overflow
-
-    if(brightness) 
+	if(LedId > NB_LEDS ) 
+		return; //to avoid overflow
+	if(brightness) 
 	{
-      Color.R = (Color.R * brightness);
-      Color.G = (Color.G * brightness);
-      Color.B = (Color.B * brightness);
-    }
-
-  LedsArray[LedId*3]   = Color.G;
-  LedsArray[LedId*3+1] = Color.R;
-  LedsArray[LedId*3+2] = Color.B;
+		Color.R = (Color.R * brightness) >> 8;
+		Color.G = (Color.G * brightness) >> 8;
+		Color.B = (Color.B * brightness) >> 8;
+	}
+	LedsArray[LedId*3]   = Color.G;
+	LedsArray[LedId*3+1] = Color.R;
+	LedsArray[LedId*3+2] = Color.B;
 }
 
 void rgb_SendArray()

@@ -2,7 +2,7 @@
 #define __WS2812B
 
 #include "ws2812b_conf.h"
-#include "modules.h"
+//#include "modules.h"
 
 #define _ws2812b_create_port(__set__, __port__, __pin__) #__set__" L:"#__port__", #"#__pin__" \n"
 #define ws2812b_create_port(__set__, __port__, __pin__) _ws2812b_create_port(__set__, __port__, __pin__)
@@ -29,4 +29,6 @@ extern const RGBColor_t MAGENTA;
 
 void rgb_SetColor(unsigned char LedId, RGBColor_t Color);
 void rgb_SendArray();
+void setBrightness(unsigned char b);
+
 #endif

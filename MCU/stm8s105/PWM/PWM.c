@@ -1,21 +1,30 @@
-
+/******************************************************************************
+* @file    timer.c
+* @author  xxc
+* @version V1.0
+* @date    2021-1-15
+* @brief   
+*
+******************************************************************************
+* @attention
+*
+*******************************************************************************/ 
 
 #include "PWM.h"
 
 
-uint8_t startAngle = 0;
-uint8_t stopAngle = 0;
 
 
-void setServo(uint8_t _angle, uint8_t _speed)
-{
-	stopAngle = _angle;
-}
-
-
-
-
-void SetTIM1forPWM(void)
+#ifdef CD_HDLED
+/**
+  * @brief  timer1 PWM设置，20ms周期，XC_HEDLED项目使用
+  * 		通道1：舵机驱动
+  * 		通道2：LED调光
+  * @param  _c1 :舵机初始位置
+  * 		_c2 :LED初始亮度
+  * @retval None
+  */
+void timer1SetforPWM(uint16_t _c1, uint16_t _c2)
 {
 
    TIM1_DeInit();
@@ -46,18 +55,20 @@ void SetTIM1forPWM(void)
 	
 	*/
 
-		/* 	(0.0050 * 250000 - 1) = 124		0.5ms	0度
-			(0.0010 * 250000 - 1) = 249		1ms		45度
-			(0.0015 * 250000 - 1) = 374		1.5ms	90度
-			(0.0020 * 250000 - 1) = 499		2ms		135度
-			(0.0025 * 250000 - 1) = 624		2.5ms	180度 
-			TIM1_SetCompare1(624);
-		*/
-
+	/* 	(0.0050 * 250000 - 1) = 124		0.5ms	0度
+		(0.0010 * 250000 - 1) = 249		1ms		45度
+		(0.0015 * 250000 - 1) = 374		1.5ms	90度
+		(0.0020 * 250000 - 1) = 499		2ms		135度
+		(0.0025 * 250000 - 1) = 624		2.5ms	180度 
+		TIM1_SetCompare1(624);
+	*/
 	TIM1_OC1Init(TIM1_OCMODE_PWM2, TIM1_OUTPUTSTATE_ENABLE, TIM1_OUTPUTNSTATE_ENABLE,
-				624, TIM1_OCPOLARITY_LOW, TIM1_OCNPOLARITY_HIGH, TIM1_OCIDLESTATE_SET,
+				_c1, TIM1_OCPOLARITY_LOW, TIM1_OCNPOLARITY_HIGH, TIM1_OCIDLESTATE_SET,
 				TIM1_OCNIDLESTATE_RESET); 
-
+				
+	TIM1_OC2Init(TIM1_OCMODE_PWM2, TIM1_OUTPUTSTATE_ENABLE, TIM1_OUTPUTNSTATE_ENABLE,
+				_c2, TIM1_OCPOLARITY_LOW, TIM1_OCNPOLARITY_HIGH, TIM1_OCIDLESTATE_SET,
+				TIM1_OCNIDLESTATE_RESET); 
 
 	/* TIM1 counter enable */
 	TIM1_Cmd(ENABLE);
@@ -65,3 +76,4 @@ void SetTIM1forPWM(void)
 	/* TIM1 Main Output Enable */
 	TIM1_CtrlPWMOutputs(ENABLE);
 }
+#endif

@@ -4,11 +4,12 @@
 
 
 #include "modules.h"
+#include "sysclk.h"   
 
 
 
-
-void SetTIM4forInt(uint32_t _ulPeriod);
+void timer2SetforInt(uint32_t _ulPeriod);
+void timer4SetforInt(uint8_t _ucPeriod);
 
 
 

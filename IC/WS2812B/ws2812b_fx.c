@@ -31,7 +31,7 @@ RGBColor_t Wheel(unsigned char WheelPos)
 
 
 
-void rainbowCycle(uint8_t wait) 
+void rainbowCycle(unsigned char wait) 
 {
   uint16_t i, j;
   for(j=0; j<256 * 5; j++) 
