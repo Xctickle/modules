@@ -33,6 +33,7 @@ Button btn_run;
 
 Severs_T g_tSeverPetal;
 BreathLED_T g_tBreathLED;
+BreathLED_T g_tWS2812B;
 
 uint8_t g_ucPetalStatus = CLOSING;
 
@@ -49,6 +50,9 @@ void BreathLED_Config(void);
 void BreathLED_Command(void);
 void SeverPetal_Config(void);
 void SeverPetal_Command(void);
+void WS2812B_Config(void);
+void WS2812B_Command(void);
+
 void GPIO_Config(void);
 
 
@@ -57,6 +61,7 @@ void swtimer1_callback(void)
 {
     SeverPetal_Command();
     BreathLED_Command();
+    WS2812B_Command();
 }
 
 void swtimer2_callback(void)
@@ -72,14 +77,19 @@ uint8_t btn_run_GPIO(void)
 
 void BTN_RUN_SINGLE_Click_Handler(void* btn)
 {
-    g_ucPetalStatus = ~g_ucPetalStatus;
+    g_ucPetalStatus = !g_ucPetalStatus;
     if (g_ucPetalStatus == OPENING)
     {
         g_tSeverPetal.targetAngle = PETAL_OPEN_ANGLE;
+        g_tBreathLED.targetBrightness = LED_OPEN_BRIGHTNESS;
+        g_tWS2812B.targetBrightness = WS2812B_OPEN_BRIGHTNESS;
+
     }
     else
     {
         g_tSeverPetal.targetAngle = PETAL_CLOSE_ANGLE;
+        g_tBreathLED.targetBrightness = LED_CLOSE_BRIGHTNESS;
+        g_tWS2812B.targetBrightness = WS2812B_CLOSE_BRIGHTNESS;
     }
 }
 
@@ -103,10 +113,53 @@ void SoftwareTimer_Config(void)
     timer_start(&swtimer2);
 }
 
+
+void WS2812B_Config(void)
+{
+    g_tWS2812B.targetBrightness = WS2812B_CLOSE_BRIGHTNESS;
+    g_tWS2812B.currentBrightness = WS2812B_CLOSE_BRIGHTNESS;
+    g_tWS2812B.step = WS2812B_STEP;
+    g_tWS2812B.status = WS2812B_STOP;
+    // g_tWS2812B.setBrightness = setBrightness;
+}
+
+void WS2812B_Command(void)
+{
+    uint8_t i;
+
+    if (g_ucPetalStatus == OPENING)
+    {
+        if (g_tWS2812B.currentBrightness >= g_tWS2812B.targetBrightness)
+        {
+            g_tWS2812B.status = WS2812B_STOP;  
+            return;
+        }
+        g_tWS2812B.currentBrightness += g_tWS2812B.step;
+    }
+    else
+    {
+        if (g_tWS2812B.currentBrightness <= g_tWS2812B.targetBrightness)
+        {
+            g_tWS2812B.status = WS2812B_STOP;  
+            return;
+        }
+        g_tWS2812B.currentBrightness -= g_tWS2812B.step;
+    }
+    
+    g_tWS2812B.status = WS2812B_RUNING;  
+    // g_tWS2812B.setBrightness(g_tWS2812B.currentBrightness);
+    setBrightness(g_tWS2812B.currentBrightness);
+    for(i=0; i < NB_LEDS; i++) 
+    {
+        rgb_SetColor(i,WHITE);
+    }
+    rgb_SendArray();
+}
+
 void BreathLED_Config(void)
 {
-    g_tBreathLED.targetBrightness = LED_OPEN_BRIGHTNESS;
-    g_tBreathLED.currentBrightness = LED_OPEN_BRIGHTNESS;
+    g_tBreathLED.targetBrightness = LED_CLOSE_BRIGHTNESS;
+    g_tBreathLED.currentBrightness = LED_CLOSE_BRIGHTNESS;
     g_tBreathLED.step = LED_STEP;
     g_tBreathLED.status = BREATHLED_STOP;
     g_tBreathLED.setBrightness = TIM1_SetCompare2;
@@ -133,15 +186,16 @@ void BreathLED_Command(void)
         g_tBreathLED.currentBrightness -= g_tBreathLED.step;
     }
     
-    g_tBreathLED.status = SEVER_RUNING;  
-    g_tBreathLED.setBrightness(g_tBreathLED.currentBrightness);
+    g_tBreathLED.status = BREATHLED_RUNING;  
+    // g_tBreathLED.setBrightness(g_tBreathLED.currentBrightness);
+    TIM1_SetCompare2(g_tBreathLED.currentBrightness);
 }
 
 
 void SeverPetal_Config(void)
 {
     timer1SetforPWM(PETAL_CLOSE_ANGLE, LED_CLOSE_BRIGHTNESS);
-    g_tSeverPetal.targetAngle = PETAL_OPEN_ANGLE;
+    g_tSeverPetal.targetAngle = PETAL_CLOSE_ANGLE;
     g_tSeverPetal.currentAngle = PETAL_CLOSE_ANGLE;
     g_tSeverPetal.step = PETAL_STEP;
     g_tSeverPetal.status = SEVER_STOP;
@@ -152,6 +206,16 @@ void SeverPetal_Command(void)
 {
     if (g_ucPetalStatus == OPENING)
     {
+        if (g_tSeverPetal.currentAngle <= g_tSeverPetal.targetAngle)
+        {
+            g_tSeverPetal.status = SEVER_STOP;  
+            return;
+        }
+        g_tSeverPetal.currentAngle -= g_tSeverPetal.step;
+
+    }
+    else
+    {
         if (g_tSeverPetal.currentAngle >= g_tSeverPetal.targetAngle)
         {
             g_tSeverPetal.status = SEVER_STOP;  
@@ -159,18 +223,10 @@ void SeverPetal_Command(void)
         }
         g_tSeverPetal.currentAngle += g_tSeverPetal.step;
     }
-    else
-    {
-        if (g_tSeverPetal.currentAngle <= g_tSeverPetal.targetAngle)
-        {
-            g_tSeverPetal.status = SEVER_STOP;  
-            return;
-        }
-        g_tSeverPetal.currentAngle -= g_tSeverPetal.step;
-    }
     
     g_tSeverPetal.status = SEVER_RUNING;  
-    g_tSeverPetal.setAngle(g_tSeverPetal.currentAngle);
+    // g_tSeverPetal.setAngle(g_tSeverPetal.currentAngle);
+    TIM1_SetCompare1(g_tSeverPetal.currentAngle);
 }
 
 
@@ -185,18 +241,23 @@ void GPIO_Config(void)
 
 void InitApp(void)
 {
+    // uint8_t i;
+
     InitSysclk();
     GPIO_Config();
     Button_Config();
     SoftwareTimer_Config();
     SeverPetal_Config();
     BreathLED_Config();
+    WS2812B_Config();
 
-    rgb_SetColor(0, RED);
-    setBrightness(250);
-    rgb_SetColor(0, RED);
-    setBrightness(100);
-    rgb_SetColor(0, RED);
+
+    // setBrightness(10);
+    // for(i=0; i < NB_LEDS; i++) 
+    // {
+    //     rgb_SetColor(i,RED);
+    // }
+    // rgb_SendArray();
 
     ENABLE_INT();
 }

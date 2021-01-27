@@ -34,7 +34,11 @@
 
 #define LED_CLOSE_BRIGHTNESS   0
 #define LED_OPEN_BRIGHTNESS    300
-#define LED_STEP               5
+#define LED_STEP               2
+
+#define WS2812B_CLOSE_BRIGHTNESS    1
+#define WS2812B_OPEN_BRIGHTNESS     200
+#define WS2812B_STEP               1
 
 
 typedef enum
@@ -49,6 +53,11 @@ typedef enum
 	BREATHLED_RUNING,
 }BREATHLED_STATUS_E;
 
+typedef enum
+{
+	WS2812B_STOP = 0,	
+	WS2812B_RUNING,
+}WS2812B_STATUS_E;
 
 typedef struct tagSevers_T
 {
