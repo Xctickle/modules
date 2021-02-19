@@ -107,9 +107,9 @@ void Button_Config(void)
 void SoftwareTimer_Config(void)
 {    
     timer4SetforInt(1);     //1ms¶¨Ê±Æ÷
-    timer_init(&swtimer1, swtimer1_callback, 20, 20); //1s loop
+    timer_init(&swtimer1, swtimer1_callback, 50, 50); 
     timer_start(&swtimer1);
-    timer_init(&swtimer2, swtimer2_callback, 5, 5); //5ms delay
+    timer_init(&swtimer2, swtimer2_callback, 5, 5);
     timer_start(&swtimer2);
 }
 

@@ -28,16 +28,16 @@
 #define ANGLE_135       499		//2ms
 #define ANGLE_180       624		//2.5ms
 
-#define PETAL_CLOSE_ANGLE   300
-#define PETAL_OPEN_ANGLE    200
+#define PETAL_CLOSE_ANGLE   313
+#define PETAL_OPEN_ANGLE    218
 #define PETAL_STEP          1
 
 #define LED_CLOSE_BRIGHTNESS   0
-#define LED_OPEN_BRIGHTNESS    300
-#define LED_STEP               2
+#define LED_OPEN_BRIGHTNESS    1000
+#define LED_STEP               10
 
-#define WS2812B_CLOSE_BRIGHTNESS    1
-#define WS2812B_OPEN_BRIGHTNESS     200
+#define WS2812B_CLOSE_BRIGHTNESS    0
+#define WS2812B_OPEN_BRIGHTNESS     110
 #define WS2812B_STEP               1
 
 
