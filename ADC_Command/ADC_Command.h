@@ -6,18 +6,19 @@
 
 #include "modules.h"
 
-#define SAMP_COUNT 5
+// #define ADC_SAMP_COUNT 5
+// #define ADC_STARTCONVERSION()       ADC1_StartConversion()
+// #define ADC_GETCONVERSIONVALUE()    ADC1_GetConversionValue()
+
 
 typedef struct ADC
 {
-    uint16_t adc_value[SAMP_COUNT];
+    uint16_t adc_value[ADC_SAMP_COUNT];
     uint8_t samp_count;
     void (*ADC_Init_handler)(void);
     struct ADC* next;
 } ADC;
 
-// void InitADC(void);
-// uint16_t getADCvalue(uint8_t _channel);
 
 void adc_loop(void);
 void adc_stop(struct ADC* handle);
