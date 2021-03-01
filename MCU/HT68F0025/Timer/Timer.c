@@ -11,10 +11,9 @@
 *******************************************************************************/ 
 
 #include "Timer.h"   
-#include "multi_timer.h"
+#include "sysclk.h"   
 
-/* 系统时钟频率 */
-#define SYS_CLK	 24000000u   	//24M
+
 
 
 /**
@@ -22,38 +21,38 @@
   * @param  None
   * @retval None
   */
-void timer0SetforInt(void)		//定时1ms
+void timer0SetforInt(void)	
 {
-	/*
-	TMOD |= 0x01;                 //0000 0001;Timer0设置工作方式1，16位定时器
-	TL0 = (65536 - 24000)%256;    //溢出时间：时钟为Fsys，则24000*（1/Fsys）=1ms; 
-	TH0 = (65536 - 24000)/256;
-	max：65536 * （1/SYS_CLK） = 0.00273s = 2.73ms
-	min：1 * （1/SYS_CLK） = 0.0000416666ms
-	1ms：0.001s / （1/SYS_CLK） = 24000
-	*/
-	TMCON |= 0x01;    	//------001 ;Timer0选择时钟Fsys // TMCON &= ~0x01;     //------000 ;Timer0选择时钟Fsys/12
-	TMOD |= 0x01;       //0000 0001;Timer0设置工作方式1，16位定时器
-	TL0 = 0x40;			//1毫秒@24.000MHz
-	TH0 = 0xA2;
-	TR0 = 0;			//定时器0除能
-	ET0 = 1;			//定时器0中断
-	TR0 = 1;			//定时器0使能
+
+
 }
 
+
 /**
-  * @brief  timer0 interrupt.
+  * @brief  TimeBase时钟配置fTB
   * @param  None
   * @retval None
   */
-void timer0() interrupt 1
+void timerbaseInit(void)
 {
-	TL0 = 0x40;		//1毫秒@24.000MHz
-	TH0 = 0xA2;
-	timer_ticks();
+	_tbck = 1;  //TBC:Bit6: fTB=fSYS/4, 8/4=2Mhz
+	/* 	fTB = 2000000hz
+		TB11~TB10
+		00：4096  / 2000000hz = 0.002048s
+		01: 8192  / 2000000hz = 0.004096s
+		10: 16384 / 2000000hz = 0.008192s
+		11: 32768 / 2000000hz = 0.016384s
+		TB02~TB00
+		000：256   / 2000000hz = 0.000128s
+		001: 512   / 2000000hz = 0.000256s
+		010: 1024  / 2000000hz = 0.000512s
+		011: 2048  / 2000000hz = 0.001024s
+	*/
+	// _tbc = 
+
+
+
 }
-
-
 
 
 

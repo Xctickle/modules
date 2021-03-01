@@ -2,31 +2,27 @@
 #define __MODULES_H_
 
 
-#include "HT68F0025.h"
+#include "HT8_MCU_IP_SEL.h"
 
 
 #define CD_GDJJKG
 
 #define ENABLE_INT()	_emi = 1		/* 使能全局中断 */
 #define DISABLE_INT()	_emi = 0		/* 禁止全局中断 */
-#define FEED_WDG()		GCC_CLRWDT()	/* 喂狗 */
+#define FEED_WDG()		_clrwdt()	/* 喂狗 */
+
 
 #define NOP()			nop()					
 
+/*!< Signed integer types  */
+typedef   signed char     int8_t;
+typedef   signed short    int16_t;
+typedef   signed long     int32_t;
 
-#if 0	/* 1表示使能调试语句， 0 表示不参与编译，不会影响编译结果 */
-	#define MODULES_Printf		printf
-#else
-	#define MODULES_Printf    (...)
-#endif
-
-#ifndef TRUE
-	#define TRUE  1
-#endif
-
-#ifndef FALSE
-	#define FALSE 0
-#endif
+/*!< Unsigned integer types  */
+typedef unsigned char     uint8_t;
+typedef unsigned short    uint16_t;
+typedef unsigned long     uint32_t;
 
 
 #endif

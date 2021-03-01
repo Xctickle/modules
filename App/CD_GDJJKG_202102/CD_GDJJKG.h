@@ -6,6 +6,9 @@
 
 #include "modules.h"
 
+void InitApp(void);
+void sendIR(void);
+void checkIR(void);
 
 
 #endif
