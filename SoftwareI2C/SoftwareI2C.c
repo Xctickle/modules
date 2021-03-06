@@ -38,8 +38,21 @@ static uint8_t g_i2c_busy = 0;
 */
 void InitI2C(void)
 {
+	#ifdef I2C_STM32
+	GPIO_InitTypeDef GPIO_InitStructure;
+	RCC_APB2PeriphClockCmd(RCC_I2C_PORT, ENABLE);	/* 打开GPIO时钟 */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;	/* 开漏输出模式 */
+	GPIO_InitStructure.GPIO_Pin = I2C_SCL_PIN;
+	GPIO_Init(GPIO_PORT_I2C_SCL, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = I2C_SDA_PIN;
+	GPIO_Init(GPIO_PORT_I2C_SDA, &GPIO_InitStructure);
+	#endif
+
+	#ifdef I2C_STM8S
 	GPIO_Init(GPIO_PORT_I2C_SCL, I2C_SCL_PIN, GPIO_MODE_OUT_OD_HIZ_FAST); /* 设为开漏模式 */
 	GPIO_Init(GPIO_PORT_I2C_SDA, I2C_SDA_PIN, GPIO_MODE_OUT_OD_HIZ_FAST); /* 设为开漏模式 */
+	#endif
 
 	/* 给一个停止信号, 复位I2C总线上的所有设备到待机模式 */
 	i2c_Stop();
@@ -67,7 +80,7 @@ static void i2c_Delay(void)
 
 		实际应用选择400KHz左右的速率即可
 	*/
-	for (i = 0; i < 200; i++);
+	for (i = 0; i < I2C_DELAY; i++);
 }
 
 /*

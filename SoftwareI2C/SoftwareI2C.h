@@ -5,21 +5,35 @@
 
 #include "modules.h"
 
+/* STM32_I2C宏 */
+// #define I2C_STM32
+// #define I2C_DELAY     200				/* I2C总线位延迟，最快400KHz */
+// #define RCC_I2C_PORT 	RCC_APB2Periph_GPIOB		/* GPIO端口时钟 */
+// #define GPIO_PORT_I2C_SCL	GPIOB			/* GPIO端口 */
+// #define GPIO_PORT_I2C_SDA	GPIOB			/* GPIO端口 */
+// #define I2C_SCL_PIN		GPIO_Pin_10			/* 连接到SCL时钟线的GPIO */
+// #define I2C_SDA_PIN		GPIO_Pin_11			/* 连接到SDA数据线的GPIO */
+// #define I2C_SCL_1()  GPIO_PORT_I2C_SCL->BSRR = I2C_SCL_PIN				/* SCL = 1 */
+// #define I2C_SCL_0()  GPIO_PORT_I2C_SCL->BRR = I2C_SCL_PIN				/* SCL = 0 */
+// #define I2C_SDA_1()  GPIO_PORT_I2C_SDA->BSRR = I2C_SDA_PIN				/* SDA = 1 */
+// #define I2C_SDA_0()  GPIO_PORT_I2C_SDA->BRR = I2C_SDA_PIN				/* SDA = 0 */
+// #define I2C_SDA_READ()  ((GPIO_PORT_I2C_SDA->IDR & I2C_SDA_PIN) != 0)	/* 读SDA口线状态 */
+// #define I2C_SCL_READ()  ((GPIO_PORT_I2C_SCL->IDR & I2C_SCL_PIN) != 0)	/* 读SCL口线状态 */
+// #endif
+
+/* STM8S_I2C宏 */
+// #define I2C_STM8S
+// #define I2C_DELAY     200				/* I2C总线位延迟，最快400KHz */
 // #define GPIO_PORT_I2C_SCL	GPIOB			/* GPIO端口 */
 // #define GPIO_PORT_I2C_SDA	GPIOB			/* GPIO端口 */
 // #define I2C_SCL_PIN		GPIO_PIN_7			/* 连接到SCL时钟线的GPIO */
 // #define I2C_SDA_PIN		GPIO_PIN_6			/* 连接到SDA数据线的GPIO */
-
-// /* 定义读写SCL和SDA的宏 */
 // #define I2C_SCL_1()  GPIO_PORT_I2C_SCL->ODR |= I2C_SCL_PIN				/* SCL = 1 */
 // #define I2C_SCL_0()  GPIO_PORT_I2C_SCL->ODR &= (uint8_t)(~I2C_SCL_PIN) 	/* SCL = 0 */
-
 // #define I2C_SDA_1()  GPIO_PORT_I2C_SDA->ODR |= I2C_SDA_PIN				/* SDA = 1 */
 // #define I2C_SDA_0()  GPIO_PORT_I2C_SDA->ODR &= (uint8_t)(~I2C_SDA_PIN) 	/* SDA = 0 */
-
 // #define I2C_SDA_READ()  ((GPIO_PORT_I2C_SDA->IDR & I2C_SDA_PIN) != 0)	/* 读SDA口线状态 */
 // #define I2C_SCL_READ()  ((GPIO_PORT_I2C_SCL->IDR & I2C_SCL_PIN) != 0)	/* 读SCL口线状态 */
-
 
 #define I2C_WR	0		/* 写控制bit */
 #define I2C_RD	1		/* 读控制bit */
