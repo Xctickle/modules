@@ -67,15 +67,35 @@ void checkIR(void)
 	if (g_ucReviceStatus)
 	{
 		g_ucReviceStatus = 0;
-		if (g_ucTimerBase0Cnt > 180)
+		if (g_ucTimerBase0Cnt > 80)
 		{
-			if (g_ucTimerBase0Cnt < 220)
+			if (g_ucTimerBase0Cnt < 150)
 			{
 				out = 1;
 			}
+			else
+			{
+				return;
+			}
+		}
+		else
+		{
+			return;
 		}
 		g_ucTimerBase0Cnt = 0;
 	}
+	else
+	{
+		if (g_ucTimerBase0Cnt > 300)
+		{
+			g_ucTimerBase0Cnt = 0;
+		}
+		else
+		{
+			return;
+		}
+	}
+
 
 
 	if (out != out_last)
@@ -99,10 +119,12 @@ void checkIR(void)
 		if (out)
 		{
 			ENABLE_OUTPUT();
+			ENABLE_OUTPUT_LED();
 		}
 		else
 		{
 			DISABLE_OUTPUT();
+			DISABLE_OUTPUT_LED();
 		}
 	}
 	else if (g_ucRunMode == MODE2)
@@ -110,6 +132,7 @@ void checkIR(void)
 		if (edge == 1)
 		{
 			REVERSE_OUTPUT();
+			REVERSE_OUTPUT_LED();
 		}
 	}
 	else if (g_ucRunMode == MODE3)
@@ -117,9 +140,11 @@ void checkIR(void)
 		if (g_usOutPutDelay == 0)
 		{
 			DISABLE_OUTPUT();
+			DISABLE_OUTPUT_LED();
 			if (edge == 1)
 			{
 				ENABLE_OUTPUT();
+				ENABLE_OUTPUT_LED();
 				g_usOutPutDelay = OUTPUT_DELAYTIME;
 			}
 		}
@@ -129,9 +154,11 @@ void checkIR(void)
 		if (g_usOutPutDelay == 0)
 		{
 			DISABLE_OUTPUT();
+			DISABLE_OUTPUT_LED();
 			if (edge == 2)
 			{
 				ENABLE_OUTPUT();
+				ENABLE_OUTPUT_LED();
 				g_usOutPutDelay = OUTPUT_DELAYTIME;
 			}
 		}
@@ -147,7 +174,8 @@ void sendIR(void)
 {
 	if (g_ucSendStatus == 0)
 	{
-		if (g_ucTimerBase1Cnt > 43)	//等待180ms，180/4.096=43.9
+		// if (g_ucTimerBase1Cnt > 43)	//等待180ms，180/4.096=43.9
+		if (g_ucTimerBase1Cnt > 21)	//等待90ms，90/4.096=21.9
 		{
 			STM_ENABLE();		//enable STM
 			g_ucTimerBase1Cnt = 0;
@@ -156,7 +184,8 @@ void sendIR(void)
 	}
 	else
 	{
-		if (g_ucTimerBase1Cnt > 6)	//等待25ms，25/4.096=6.1
+		// if (g_ucTimerBase1Cnt > 6)	//等待25ms，25/4.096=6.1
+		if (g_ucTimerBase1Cnt > 3)	//等待15ms，15/4.096=3.6
 		{
 			STM_DISABLE();
 			g_ucTimerBase1Cnt = 0;
@@ -206,7 +235,7 @@ void InitApp(void)
 	STM_Init();
 	
 	g_nCCRA = 128;	//PWM duty set 128
-	g_nCCRP = 4;	//PWM period set 4*128
+	g_nCCRP = 2;	//PWM period set 2*128
 	
 	/* Configure pwm function */
 	STM_PwmOutputConfig();
@@ -219,7 +248,7 @@ void InitApp(void)
 	
 	// STM_ENABLE();		//enable STM
 
-	if (_pa0 && _pa0)
+	if (_pa0 && _pa1)
 	{
 		g_ucRunMode = MODE1;
 	}
