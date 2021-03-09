@@ -68,7 +68,7 @@ void InitI2C(void)
 */
 static void i2c_Delay(void)
 {
-	uint8_t i;
+	uint16_t i;
 
 	/*　
 		CPU主频168MHz时，在内部Flash运行, MDK工程不优化。用台式示波器观测波形。

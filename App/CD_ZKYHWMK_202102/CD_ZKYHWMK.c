@@ -29,20 +29,33 @@ void read(void)
 
     unsigned char data_temp[2];
     unsigned char p_checksum_temp;
+    uint16_t delay_out = 0;
+
+    // i2c_Start();
+    // i2c_SendByte(0x20);
+    // i2c_WaitAck(); 
+    // i2c_SendByte(0x03); 
+    // i2c_WaitAck(); 
+    // i2c_SendByte(0x00); 
+    // i2c_WaitAck(); 
+    // i2c_Stop();
+
+    // delay_ms(50);
 
 
+    // i2c_Start();
+    // i2c_SendByte(0x21);
+	// if(i2c_WaitAck())
+    // {
+    //     // return;
+    // } 
+    // data_temp[0] =  i2c_ReadByte();    //read the first byte (MSB)data_temp[0] =
+	// i2c_Ack();
+    // data_temp[1] =  i2c_ReadByte();    //read the second byte (LSB)data_temp[1] =
+	// i2c_NAck();
+    // i2c_Stop();
 
-
-    i2c_Start();
-    i2c_SendByte(0x21);
-	i2c_WaitAck(); 
-    data_temp[0] =  i2c_ReadByte();    //read the first byte (MSB)data_temp[0] =
-	i2c_Ack();
-    data_temp[1] =  i2c_ReadByte();    //read the second byte (LSB)data_temp[1] =
-	i2c_NAck();
-    i2c_Stop();
-
-    delay_us(20);
+    // delay_us(20);
 
 
     i2c_Start();
@@ -51,6 +64,7 @@ void read(void)
     i2c_SendByte(0x84); 
     i2c_WaitAck(); 
     i2c_SendByte(0x00); 
+    i2c_WaitAck(); 
     i2c_Stop();
 
     delay_us(20);
@@ -66,7 +80,7 @@ void read(void)
         i2c_WaitAck(); 
         i2c_Stop();
 
-        delay_ms(100);
+        delay_ms(5);
 
         i2c_Start();
         i2c_SendByte(0x21);
@@ -78,6 +92,13 @@ void read(void)
         i2c_Stop();
 
         delay_us(20);
+        // delay_out++;
+
+        // if (delay_out > 2000)
+        // {
+        //     return;
+        // }
+        
 
     } while (data_temp[0] != 0xa4);
     
@@ -139,7 +160,7 @@ void read(void)
     sprintf(buf, "obj:%d.,ntc:%d ", Tobj, Temp);
     LCD_DispStr(10, 10, buf, &tFont);	
 
-    delay_ms(200);
+    // delay_ms(100);
 
 }
 
