@@ -39,19 +39,19 @@
 	【串口4】 --- 不做串口用。
 	【串口5】 --- 不做串口用。
 */
-// #define	UART1_FIFO_EN	1
-// #define	UART2_FIFO_EN	0
-// #define	UART3_FIFO_EN	0
-// #define	UART4_FIFO_EN	0
-// #define	UART5_FIFO_EN	0
+#define	UART1_FIFO_EN	1
+#define	UART2_FIFO_EN	0
+#define	UART3_FIFO_EN	0
+#define	UART4_FIFO_EN	0
+#define	UART5_FIFO_EN	0
 
-// /* RS485芯片发送使能GPIO, PB2 */
-// #define RCC_RS485_TXEN 	 RCC_APB2Periph_GPIOB
-// #define PORT_RS485_TXEN  GPIOB
-// #define PIN_RS485_TXEN	 GPIO_Pin_2
+/* RS485芯片发送使能GPIO, PB2 */
+#define RCC_RS485_TXEN 	 RCC_APB2Periph_GPIOB
+#define PORT_RS485_TXEN  GPIOB
+#define PIN_RS485_TXEN	 GPIO_Pin_2
 
-// #define RS485_RX_EN()	PORT_RS485_TXEN->BRR = PIN_RS485_TXEN
-// #define RS485_TX_EN()	PORT_RS485_TXEN->BSRR = PIN_RS485_TXEN
+#define RS485_RX_EN()	PORT_RS485_TXEN->BRR = PIN_RS485_TXEN
+#define RS485_TX_EN()	PORT_RS485_TXEN->BSRR = PIN_RS485_TXEN
 
 
 /* 定义端口号 */
@@ -65,54 +65,40 @@ typedef enum
 }COM_PORT_E;
 
 /* 定义串口波特率和FIFO缓冲区大小，分为发送缓冲区和接收缓冲区, 支持全双工 */
-// #if UART1_FIFO_EN == 1
-// 	#define UART1_BAUD			9600
-// 	#define UART1_TX_BUF_SIZE	1*1024
-// 	#define UART1_RX_BUF_SIZE	1*1024
-// #endif
+#if UART1_FIFO_EN == 1
+	#define UART1_BAUD			9600
+	#define UART1_TX_BUF_SIZE	1*1024
+	#define UART1_RX_BUF_SIZE	1*1024
+#endif
 
-// #if UART2_FIFO_EN == 1
-// 	#define UART2_BAUD			115200
-// 	#define UART2_TX_BUF_SIZE	1*1024
-// 	#define UART2_RX_BUF_SIZE	1*1024
-// #endif
 
-// #if UART3_FIFO_EN == 1
-// 	#define UART3_BAUD			9600
-// 	#define UART3_TX_BUF_SIZE	1*1024
-// 	#define UART3_RX_BUF_SIZE	1*1024
-// #endif
+#define USART_GET_RX()  		USART_GetITStatus(_pUart->uart, USART_IT_RXNE)
+#define USART_GET_TX()  		USART_GetITStatus(_pUart->uart, USART_IT_TXE)
+#define USART_SET_TX_ENABLE()  	USART_ITConfig(_pUart->uart, USART_IT_TXE, DISABLE)
+#define USART_SET_TC_DISABLE()  USART_GetITStatus(_pUart->uart, USART_IT_TXE)
 
-// #if UART4_FIFO_EN == 1
-// 	#define UART4_BAUD			115200
-// 	#define UART4_TX_BUF_SIZE	1*1024
-// 	#define UART4_RX_BUF_SIZE	1*1024
-// #endif
 
-// #if UART5_FIFO_EN == 1
-// 	#define UART5_BAUD			115200
-// 	#define UART5_TX_BUF_SIZE	1*1024
-// 	#define UART5_RX_BUF_SIZE	1*1024
-// #endif
+
+
 
 /* 串口设备结构体 */
 typedef struct
 {
-	USART_TypeDef *uart;		/* STM32内部串口设备指针 */
 	uint8_t *pTxBuf;			/* 发送缓冲区 */
 	uint8_t *pRxBuf;			/* 接收缓冲区 */
 	uint16_t usTxBufSize;		/* 发送缓冲区大小 */
 	uint16_t usRxBufSize;		/* 接收缓冲区大小 */
 	__IO uint16_t usTxWrite;			/* 发送缓冲区写指针 */
-	__IO uint16_t usTxRead;			/* 发送缓冲区读指针 */
+	__IO uint16_t usTxRead;				/* 发送缓冲区读指针 */
 	__IO uint16_t usTxCount;			/* 等待发送的数据个数 */
 
 	__IO uint16_t usRxWrite;			/* 接收缓冲区写指针 */
-	__IO uint16_t usRxRead;			/* 接收缓冲区读指针 */
+	__IO uint16_t usRxRead;				/* 接收缓冲区读指针 */
 	__IO uint16_t usRxCount;			/* 还未读取的新数据个数 */
 
-	void (*SendBefor)(void); 	/* 开始发送之前的回调函数指针（主要用于RS485切换到发送模式） */
-	void (*SendOver)(void); 	/* 发送完毕的回调函数指针（主要用于RS485将发送模式切换为接收模式） */
+    void (*InitHandler)(void);			/* 配置串口的硬件参数(中断、波特率等) */
+	void (*SendBefor)(void); 			/* 开始发送之前的回调函数指针（主要用于RS485切换到发送模式） */
+	void (*SendOver)(void); 			/* 发送完毕的回调函数指针（主要用于RS485将发送模式切换为接收模式） */
 	void (*ReciveNew)(uint8_t _byte);	/* 串口收到数据的回调函数指针 */
 }UART_T;
 

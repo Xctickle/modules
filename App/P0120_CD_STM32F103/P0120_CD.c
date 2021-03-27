@@ -7,9 +7,14 @@ extern void delay_init(void);
 extern void delay_ms(u16 nms);
 extern void delay_us(u32 nus);
 
+
+#define TOBJ_SAMPLE_NUM 	100
+
 FONT_T tFont;			/* 定义一个字体结构体变量，用于设置字体参数 */
 char buf[64];
 
+uint8_t Draw_Mode = 0;
+uint16_t Tobj_Buf[TOBJ_SAMPLE_NUM];
 
 uint16_t Temp;
 uint16_t Tobj;
@@ -53,10 +58,37 @@ void read(void)
     delay_ms(300);
 	if (ReadLine(buf))
 	{
+		if (str_len(buf) == 7)
+		{
+			Tobj = str_to_int(buf+3);
+		}
+		
+
     	LCD_DispStr(10, 10, buf, &tFont);	
 	}
+
+
+
 }
 
+// void PlotWave(void)
+// {
+//     uint8 i;
+//     if (Draw_Mode == 0) //Line Mode
+//     {
+//         for (i = 0; i < 100; i++)
+//         {
+//             LCD_DrawLine(i + 26, *(WaveData - 50 + i), i + 27, *(WaveData - 50 + i + 1));
+//         }
+//     }
+//     if (Draw_Mode == 1) //Dot Mode
+//     {
+//         for (i = 0; i <= 100; i++)
+//         {
+//             LCD_DrawPoints(i + 26, *(WaveData - 50 + i));
+//         }
+//     }
+// }
 
 
 void InitApp(void)
@@ -88,6 +120,10 @@ void InitApp(void)
     LCD_InitHard();	/* 初始化显示器硬件(配置GPIO和FSMC,给LCD发送初始化指令) */
 
 	LCD_ClrScr(CL_BLUE);  		/* 清屏 背景蓝色 */
+
+
+	LCD_DrawLine(20,20,200,200,CL_GREY2);
+
 
 	// LCD_SetBackLight(g_tParam.ucBackLight);		/* 设置背光亮度。 */
 
