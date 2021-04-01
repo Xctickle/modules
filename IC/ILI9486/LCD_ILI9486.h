@@ -18,6 +18,14 @@
 #include "modules.h"
 #include "fonts.h"
 
+
+void ILI9486_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth);
+void ILI9486_QuitWinMode(void);
+void ILI9486_SetCursor(uint16_t _usX, uint16_t _usY);
+
+void ILI9486_WriteCmd(uint8_t _ucCmd);
+void ILI9486_WriteParam(uint8_t _ucParam);
+
 /* 可供外部模块调用的函数 */
 uint32_t ILI9486_ReadID(void);
 void ILI9486_InitHard(void);

@@ -27,6 +27,8 @@ uint32_t AsciiToUint32(char *pAscii);
 
 unsigned char CheckCrc(unsigned char *data1, unsigned char nbrOfBytes, unsigned char checksum);
 void BubleSort(uint16_t a[], uint8_t n);
-
+uint16_t DataRemap_reversal(uint16_t val, uint16_t rangeMax, uint16_t rangeMin, uint16_t rangeMaxNew, uint16_t rangeMinNew);
+uint16_t DataRemap(uint16_t val, uint16_t rangeMax, uint16_t rangeMin, uint16_t rangeMaxNew, uint16_t rangeMinNew);
+void ArrayDataShift(uint16_t newvol, uint16_t *buf, uint16_t len);
 
 #endif

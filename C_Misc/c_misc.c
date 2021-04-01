@@ -575,3 +575,61 @@ unsigned int FindOneInNumber_02(unsigned char x)
 
 }
 
+/**
+  * @brief  将采样值的映射到屏幕的显示范围
+  * @param  val：待映射的值
+  * @param  rangeMax：当前值的最大值
+  * @param  rangeMin：当前值的最小值
+  * @param  rangeMaxNew：映射最大值
+  * @param  rangeMinNew：映射最小值
+  * @retval 映射后的值
+  */
+uint16_t DataRemap(uint16_t val, uint16_t rangeMax, uint16_t rangeMin, uint16_t rangeMaxNew, uint16_t rangeMinNew)
+{
+    if (val > rangeMax)
+        val = rangeMax;
+    else if (val < rangeMin)
+        val = rangeMin;
+
+    val = rangeMinNew + val * (rangeMaxNew - rangeMinNew) / (rangeMax - rangeMin);
+    return val;
+}
+
+/**
+  * @brief  将采样值的映射到屏幕的显示范围，并反转。反转的目的是由于屏幕原点坐标为左上角
+  * @param  val：待映射的值
+  * @param  rangeMax：当前值的最大值
+  * @param  rangeMin：当前值的最小值
+  * @param  rangeMaxNew：映射最大值
+  * @param  rangeMinNew：映射最小值
+  * @retval 映射后的值
+  */
+uint16_t DataRemap_reversal(uint16_t val, uint16_t rangeMax, uint16_t rangeMin, uint16_t rangeMaxNew, uint16_t rangeMinNew)
+{
+    if (val > rangeMax)
+        val = rangeMax;
+    else if (val < rangeMin)
+        val = rangeMin;
+
+    val = rangeMinNew + (uint32_t)(rangeMax - val) * (rangeMaxNew - rangeMinNew) / (rangeMax - rangeMin);
+    return val;
+}
+
+/**
+  * @brief  数组数据移位
+  * @param  newvol：新增数据
+  * @param  buf：数组
+  * @param  len：数组长度
+  * @retval none
+  */
+void ArrayDataShift(uint16_t newvol, uint16_t *buf, uint16_t len)
+{
+    uint16_t i;
+
+    for(i = len; i > 0; i--)
+    {
+        *(buf + i) = *(buf + i - 1);
+    }
+
+    *(buf) = newvol;
+} 

@@ -18,6 +18,9 @@
 #include "modules.h"
 #include "fonts.h"
 
+// #define BUTTON_BEEP()	BEEP_KeyTone();	/* 按键提示音 */
+#define BUTTON_BEEP()	/* 无按键提示音 */
+
 
 /* 定义LCD显示区域的分辨率 */
 #define LCD_30_HEIGHT	240		/* 3.0寸宽屏 高度，单位：像素 */
@@ -76,6 +79,8 @@ enum
 	CL_GREY3		= RGB( 200, 200, 200), 	/* 最浅灰色 */
 	CL_GREY4		= RGB( 230, 230, 230), 	/* 最浅灰色 */
 
+	CL_BUTTON_GREY	= RGB( 220, 220, 220), /* WINDOWS 按钮表面灰色 */
+
 	CL_MAGENTA      = 0xF81F,	/* 红紫色，洋红色 */
 	CL_CYAN         = 0x7FFF,	/* 蓝绿色，青色 */
 
@@ -84,7 +89,11 @@ enum
 	CL_BLUE3        = RGB(  68, 68, 255),		/* 浅蓝色1 */
 	CL_BLUE4        = RGB(  0, 64, 128),		/* 浅蓝色1 */
 
-
+	/* UI 界面 Windows控件常用色 */
+	CL_BTN_FACE		= RGB(236, 233, 216),	/* 按钮表面颜色(灰) */
+	
+	CL_BTN_FONT		= CL_BLACK,				/* 按钮字体颜色（黑） */
+	
 	CL_BOX_BORDER1	= RGB(172, 168,153),	/* 分组框主线颜色 */
 	CL_BOX_BORDER2	= RGB(255, 255,255),	/* 分组框阴影线颜色 */
 
@@ -92,6 +101,50 @@ enum
 	CL_MASK			= 0x9999	/* 颜色掩码，用于文字背景透明 */
 };
 
+/* 文字对齐方式 */
+enum
+{
+	ALIGN_LEFT = 0,
+	ALIGN_CENTER = 1,
+	ALIGN_RIGHT = 2
+};
+
+/* 编辑框风格 */
+enum
+{
+	EDIT_BORDER_COLOR		= CL_BLUE2,		/* 编辑框四个边的颜色 */
+	EDIT_BACK_COLOR			= CL_WHITE,			/* 编辑框背景 */
+};
+
+/* 按钮风格 */
+enum
+{
+	BUTTON_BORDER_COLOR		= CL_BLUE2,			/* 按钮四个边的颜色 */
+	BUTTON_BORDER1_COLOR	= CL_WHITE,			/* 按钮四个边内部2列的颜色 */
+	BUTTON_BORDER2_COLOR	= CL_GREY1,			/* 按钮四个边内部2列的颜色 */
+	BUTTON_BACK_COLOR		= CL_GREY3,			/* 按钮背景 */
+	BUTTON_ACTIVE_COLOR		= CL_CYAN,			/* 激活的按钮背景 */
+};
+
+/* 窗口风格 */
+enum
+{
+	WIN_BORDER_COLOR	= CL_BLUE4,		/* 窗口边框 */
+	WIN_TITLE_COLOR		= CL_BLUE3,		/* 窗口标题蓝背景颜色 */
+	WIN_CAPTION_COLOR	= CL_WHITE,		/* 窗口标题栏文字颜色 */
+	WIN_BODY_COLOR		= CL_GREY2,		/* 窗体颜色 */
+};
+
+/* 检查框风格 */
+enum
+{
+	CHECK_BOX_BORDER_COLOR	= CL_BLUE2,		/* 检查框四个边的颜色 */
+	CHECK_BOX_BACK_COLOR	= CL_GREY3,		/* 检查框背景 */
+	CHECK_BOX_CHECKED_COLOR	= CL_RED,		/* 检查框打勾的颜色 */
+
+	CHECK_BOX_H			= 24,				/* 检查框高度 */
+	CHECK_BOX_W			= 24,				/* 检查框高度 */
+};
 
 /* 字体代码 */
 typedef enum
@@ -101,7 +154,7 @@ typedef enum
 	FC_ST_24,			/* 宋体24x24点阵 （宽x高） -- 暂时未支持 */
 	FC_ST_32,			/* 宋体32x32点阵 （宽x高） -- 暂时未支持 */	
 	FC_ST_24X30,
-
+	
 	FC_RA8875_16,		/* RA8875 内置字体 16点阵 */
 	FC_RA8875_24,		/* RA8875 内置字体 24点阵 */
 	FC_RA8875_32		/* RA8875 内置字体 32点阵 */	
@@ -116,22 +169,109 @@ typedef struct
 	uint16_t Space;		/* 文字间距，单位 = 像素 */
 }FONT_T;
 
+/* 控件ID */
+typedef enum
+{
+	ID_ICON		= 1,
+	ID_WIN		= 2,
+	ID_LABEL	= 3,
+	ID_BUTTON	= 4,
+	ID_CHECK 	= 5,
+	ID_EDIT 	= 6,
+	ID_GROUP 	= 7,
+}CONTROL_ID_T;
 
-/* 曲线图结构 */
+/* 图标结构 */
 typedef struct
 {
 	uint8_t id;
 	uint16_t Left;		/* 左上角X坐标 */
 	uint16_t Top;		/* 左上角Y坐标 */
-	uint16_t Height;	/* 高度 */
-	uint16_t Width;		/* 宽度 */
-	uint16_t Xmin;	
-	uint16_t Xmax;	
-	uint16_t Ymin;	
-	uint16_t Ymax;	
-	uint16_t Lenght;	
-	uint16_t *pData;	/* 指向数据 */
-}CURVEGRAPH_T;
+	uint16_t Height;	/* 图标高度 */
+	uint16_t Width;		/* 图标宽度 */
+	uint16_t *pBmp;		/* 指向图标图片数据 */
+	char  Text[16];	/* 图标文本, 最多显示5个汉字16点阵 */
+}ICON_T;
+
+/* 窗体结构 */
+typedef struct
+{
+	uint8_t id;
+	uint16_t Left;
+	uint16_t Top;
+	uint16_t Height;
+	uint16_t Width;
+	uint16_t Color;
+	FONT_T *Font;
+	char *pCaption;
+}WIN_T;
+
+/* 文本标签结构 */
+typedef struct
+{
+	uint8_t id;
+	uint16_t Left;			/* 左上角X坐标 */
+	uint16_t Top;			/* 左上角Y坐标 */
+	uint16_t Height;		/* 高度 */
+	uint16_t Width;			/* 宽度 */
+	uint16_t MaxLen;		/* 字符串长度 */
+	FONT_T *Font;			/* 字体 */
+	char  *pCaption;
+}LABEL_T;
+
+/* 按钮结构 */
+typedef struct
+{
+	uint8_t id;
+	uint16_t Left;
+	uint16_t Top;
+	uint16_t Height;
+	uint16_t Width;
+	/* 按钮的颜色，由底层自动管理 */
+	FONT_T *Font;			/* 字体 */
+	char *pCaption;
+	uint8_t Focus;			/* 焦点 */
+}BUTTON_T;
+
+/* 编辑框结构 */
+typedef struct
+{
+	uint8_t id;
+	uint16_t Left;
+	uint16_t Top;
+	uint16_t Height;
+	uint16_t Width;
+	uint16_t Color;
+	FONT_T *Font;			/* 字体 */
+	char   *pCaption;
+	char Text[32];			/* 用于存放编辑内容 */
+}EDIT_T;
+
+/* 检查框 CHECK BOX 结构 */
+typedef struct
+{
+	uint8_t id;
+	uint16_t Left;			/* 左上角X坐标 */
+	uint16_t Top;			/* 左上角Y坐标 */
+	uint16_t Height;		/* 高度 */
+	uint16_t Width;			/* 宽度 */
+	uint16_t Color;			/* 颜色 */
+	FONT_T *Font;			/* 字体 */
+	char  *pCaption;
+	uint8_t Checked;		/* 1表示打勾 */
+}CHECK_T;
+
+/* 分组框GROUP BOX 结构 */
+typedef struct
+{
+	uint8_t id;
+	uint16_t Left;			/* 左上角X坐标 */
+	uint16_t Top;			/* 左上角Y坐标 */
+	uint16_t Height;		/* 高度 */
+	uint16_t Width;			/* 宽度 */
+	FONT_T *Font;			/* 字体 */
+	char  *pCaption;
+}GROUP_T;
 
 /* 背景光控制 */
 #define BRIGHT_MAX		255
@@ -139,20 +279,9 @@ typedef struct
 #define BRIGHT_DEFAULT	200
 #define BRIGHT_STEP		5
 
-
-
-void LCD_SetFont(sFONT *fonts);
-sFONT *LCD_GetFont(void);
-void LCD_SetColors(uint16_t TextColor, uint16_t BackColor);
-void LCD_GetColors(uint16_t *TextColor, uint16_t *BackColor);
-void LCD_SetTextColor(uint16_t Color);
-void LCD_SetBackColor(uint16_t Color);
-void ILI9341_DispString_EN (uint16_t usX ,uint16_t usY,  char * pStr );
-void ILI9341_DispChar_EN ( uint16_t usX, uint16_t usY, const char cChar );
-
 /* 可供外部模块调用的函数 */
 void LCD_InitHard(void);
-
+void LCD_GetChipDescribe(char *_str);
 uint16_t LCD_GetHeight(void);
 uint16_t LCD_GetWidth(void);
 void LCD_DispOn(void);
@@ -171,9 +300,28 @@ uint8_t LCD_GetBackLight(void);
 
 void LCD_Fill_Rect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor);
 
+void LCD_DrawWin(WIN_T *_pWin);
+void LCD_DrawIcon(const ICON_T *_tIcon, FONT_T *_tFont, uint8_t _ucFocusMode);
+void LCD_DrawEdit(EDIT_T *_pEdit);
+void LCD_DrawButton(BUTTON_T *_pBtn);
+void LCD_DrawLabel(LABEL_T *_pLabel);
+void LCD_DrawCheckBox(CHECK_T *_pCheckBox);
+void LCD_DrawGroupBox(GROUP_T *_pBox);
 
+void LCD_DispControl(void *_pControl);
+
+void LCD_DrawIcon32(const ICON_T *_tIcon, FONT_T *_tFont, uint8_t _ucFocusMode);
+void LCD_DrawBmp32(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint8_t *_pBmp);
+
+uint16_t LCD_GetFontWidth(FONT_T *_tFont);
+uint16_t LCD_GetFontHeight(FONT_T *_tFont);
+uint16_t LCD_GetStrWidth(char *_ptr, FONT_T *_tFont);
+void LCD_DispStrEx(uint16_t _usX, uint16_t _usY, char *_ptr, FONT_T *_tFont, uint16_t _Width, uint8_t _Align);
 
 void LCD_SetDirection(uint8_t _dir);
+uint8_t LCD_ButtonTouchDown(BUTTON_T *_btn, uint16_t _usX, uint16_t _usY);
+uint8_t LCD_ButtonTouchRelease(BUTTON_T *_btn, uint16_t _usX, uint16_t _usY);
+void LCD_InitButton(BUTTON_T *_btn, uint16_t _x, uint16_t _y, uint16_t _h, uint16_t _w, char *_pCaption, FONT_T *_pFont);
 
 /* 下面3个变量，主要用于使程序同时支持不同的屏 */
 extern uint16_t g_ChipID;			/* 驱动芯片ID */

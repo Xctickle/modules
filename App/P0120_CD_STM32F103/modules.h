@@ -7,8 +7,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "tft_lcd.h"
 #include "LCD_ILI9486.h"
+#include "tft_lcd.h"
 #include "SoftwareI2C.h"
 #include "delay.h"
 #include "sys.h"

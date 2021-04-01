@@ -30,12 +30,7 @@
 static __IO uint8_t s_RGBChgEn = 0;		/* RGB转换使能, 4001屏写显存后读会的RGB格式和写入的不同 */
 
 static void Init_9486(void);
-static void ILI9486_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth);
-static void ILI9486_QuitWinMode(void);
-static void ILI9486_SetCursor(uint16_t _usX, uint16_t _usY);
 
-static void ILI9486_WriteCmd(uint8_t _ucCmd);
-static void ILI9486_WriteParam(uint8_t _ucParam);
 
 /*
 *********************************************************************************************************
@@ -133,7 +128,7 @@ void ILI9486_SetDirection(uint8_t _ucDir)
 /*
 *********************************************************************************************************
 *	函 数 名: Init_9486
-*	功能说明: 初始化ILI9486驱动器
+*	功能说明: 初始化ILI9486驱动器。扫描方式：从左向右，从上到下
 *	形    参:  无
 *	返 回 值: 无
 *********************************************************************************************************
@@ -141,17 +136,6 @@ void ILI9486_SetDirection(uint8_t _ucDir)
 static void Init_9486(void)
 {
 	/* 初始化LCD，写LCD寄存器进行配置 */
-
-#if 0
-	// VCI=2.8V
-	//************* Reset LCD Driver ****************//
-	LCD_nRESET = 1;
-	Delayms(1); // Delay 1ms
-	LCD_nRESET = 0;
-	Delayms(10); // Delay 10ms // This delay time is necessary
-	LCD_nRESET = 1;
-	Delayms(120); // Delay 100 ms
-#endif
 
 	//************* Start Initial Sequence **********//
 
@@ -264,6 +248,7 @@ static void Init_9486(void)
 	
 	ILI9486_WriteCmd(0x36);
 	ILI9486_WriteParam(0x48);
+	// ILI9486_WriteParam(0x08 |(6<<5));//根据ucOption的值设置LCD参数，共0-7种模式
 	
 	ILI9486_WriteCmd(0x3A);
 	ILI9486_WriteParam(0x55);
@@ -288,7 +273,7 @@ static void Init_9486(void)
 *	返 回 值: 无
 *********************************************************************************************************
 */
-static void ILI9486_WriteCmd(uint8_t _ucCmd)
+void ILI9486_WriteCmd(uint8_t _ucCmd)
 {
 	ILI9486_REG = _ucCmd;	/* 发送CMD */
 }
@@ -302,7 +287,7 @@ static void ILI9486_WriteCmd(uint8_t _ucCmd)
 *	返 回 值: 无
 *********************************************************************************************************
 */
-static void ILI9486_WriteParam(uint8_t _ucParam)
+void ILI9486_WriteParam(uint8_t _ucParam)
 {
 	ILI9486_RAM = _ucParam;
 }
@@ -319,7 +304,7 @@ static void ILI9486_WriteParam(uint8_t _ucParam)
 *	返 回 值: 无
 *********************************************************************************************************
 */
-static void ILI9486_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth)
+void ILI9486_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth)
 {
 	ILI9486_WriteCmd(0X2A); 		/* 设置X坐标 */
 	ILI9486_WriteParam(_usX >> 8);	/* 起始点 */
@@ -342,7 +327,7 @@ static void ILI9486_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight,
 *	返 回 值: 无
 *********************************************************************************************************
 */
-static void ILI9486_SetCursor(uint16_t _usX, uint16_t _usY)
+void ILI9486_SetCursor(uint16_t _usX, uint16_t _usY)
 {
 	ILI9486_WriteCmd(0X2A); 		/* 设置X坐标 */
 	ILI9486_WriteParam(_usX >> 8);	/* 先高8位，然后低8位 */
@@ -365,7 +350,7 @@ static void ILI9486_SetCursor(uint16_t _usX, uint16_t _usY)
 *	返 回 值: 无
 *********************************************************************************************************
 */
-static void ILI9486_QuitWinMode(void)
+void ILI9486_QuitWinMode(void)
 {
 	ILI9486_SetDispWin(0, 0, g_LcdHeight, g_LcdWidth);
 }
