@@ -42,6 +42,7 @@ void ILI9486_DrawRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t
 void ILI9486_FillRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor);
 void ILI9486_DrawCircle(uint16_t _usX, uint16_t _usY, uint16_t _usRadius, uint16_t _usColor);
 void ILI9486_DrawBMP(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t *_ptr);
+void ILI9486_DispChar_EN ( uint16_t usX, uint16_t usY, sFONT _sfont, const char cChar, uint16_t _textColor, uint16_t _backColor);
 
 void ILI9486_SetBackLight(uint8_t _bright);
 void ILI9486_SetDirection(uint8_t _ucDir);

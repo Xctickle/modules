@@ -147,8 +147,7 @@ void LCD_SetColors(uint16_t TextColor, uint16_t BackColor);
 void LCD_GetColors(uint16_t *TextColor, uint16_t *BackColor);
 void LCD_SetTextColor(uint16_t Color);
 void LCD_SetBackColor(uint16_t Color);
-void ILI9341_DispString_EN (uint16_t usX ,uint16_t usY,  char * pStr );
-void ILI9341_DispChar_EN ( uint16_t usX, uint16_t usY, const char cChar );
+void LCD_DispString_EN(uint16_t usX ,uint16_t usY, char * pStr);
 
 /* 可供外部模块调用的函数 */
 void LCD_InitHard(void);

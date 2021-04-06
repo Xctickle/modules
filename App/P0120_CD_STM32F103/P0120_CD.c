@@ -109,13 +109,13 @@ void read(void)
 
 
     sprintf(buf, "obj:%.1f C", (float)Tobj/10.0);
-	ILI9341_DispString_EN(20,50,buf);
+	LCD_DispString_EN(20,50,buf);
 
     sprintf(buf, "max:%.1f C", (float)Tobj_max/10.0);
-	ILI9341_DispString_EN(20,80,buf);
+	LCD_DispString_EN(20,80,buf);
 
     sprintf(buf, "min:%.1f C", (float)Tobj_min/10.0);
-	ILI9341_DispString_EN(20,110,buf);
+	LCD_DispString_EN(20,110,buf);
 
 }
 
@@ -125,7 +125,7 @@ void PlotWave(void)
 	
 	for (i = 0; i < (CHART_H_MAX - CHART_H_MIN - 1); i++)
 	{
-		LCD_DrawLine(i + CHART_H_MIN, waveBuf[i], i + CHART_H_MIN + 1, waveBuf[i + 1],CL_BLUE);
+		LCD_DrawLine(i + CHART_H_MIN, waveBuf[i], i + CHART_H_MIN + 1, waveBuf[i + 1],CL_BLACK);
 	}
 
 	for (i = 0; i < TOBJ_SAMPLE_NUM; i++)
@@ -140,24 +140,6 @@ void PlotWave(void)
 
 }
 
-// void PlotWave(void)
-// {
-//     uint8 i;
-//     if (Draw_Mode == 0) //Line Mode
-//     {
-//         for (i = 0; i < 100; i++)
-//         {
-//             LCD_DrawLine(i + 26, *(WaveData - 50 + i), i + 27, *(WaveData - 50 + i + 1));
-//         }
-//     }
-//     if (Draw_Mode == 1) //Dot Mode
-//     {
-//         for (i = 0; i <= 100; i++)
-//         {
-//             LCD_DrawPoints(i + 26, *(WaveData - 50 + i));
-//         }
-//     }
-// }
 
 /**
   * @brief  Configure PA.00 in interrupt mode
@@ -231,12 +213,12 @@ void InitApp(void)
 
 	// EXTI0_Config();
 
-	LCD_ClrScr(CL_BLUE);  		/* ÇåÆÁ ±³¾°À¶É« */
+	LCD_ClrScr(CL_BLACK);  		/* ÇåÆÁ ±³¾°À¶É« */
 
 	LCD_SetFont(&Font24x32);
-	LCD_SetColors(CL_GREEN,CL_WHITE);
+	LCD_SetColors(CL_WHITE,CL_BLACK);
 
-	// ILI9341_DispString_EN(20,50,"0123456");
+	// LCD_DispString_EN(20,50,"0123456");
 
 
 

@@ -26,12 +26,6 @@ static void LCD_HardReset(void);
 
 void LCD_SetPwmBackLight(uint8_t _bright);
 
-extern void ILI9486_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth);
-extern void ILI9486_QuitWinMode(void);
-extern void ILI9486_SetCursor(uint16_t _usX, uint16_t _usY);
-
-extern void ILI9486_WriteCmd(uint8_t _ucCmd);
-extern void ILI9486_WriteParam(uint8_t _ucParam);
 
 /*
 *********************************************************************************************************
@@ -254,14 +248,14 @@ void LCD_SetBackColor(uint16_t Color)
 
 
 /**
- * @brief  在 ILI9341 显示器上显示英文字符串
+ * @brief  在显示器上显示英文字符串
  * @param  usX ：在特定扫描方向下字符的起始X坐标
  * @param  usY ：在特定扫描方向下字符的起始Y坐标
  * @param  pStr ：要显示的英文字符串的首地址
- * @note 可使用LCD_SetBackColor、LCD_SetTextColor、LCD_SetColors函数设置颜色
+ * @note 
  * @retval 无
  */
-void ILI9341_DispString_EN (uint16_t usX ,uint16_t usY,  char * pStr )
+void LCD_DispString_EN (uint16_t usX ,uint16_t usY, char * pStr )
 {
 	while ( * pStr != '\0' )
 	{
@@ -277,7 +271,7 @@ void ILI9341_DispString_EN (uint16_t usX ,uint16_t usY,  char * pStr )
 			usY = 0;
 		}
 		
-		ILI9341_DispChar_EN ( usX, usY, * pStr);
+		ILI9486_DispChar_EN (usX, usY, *LCD_Currentfonts, *pStr, CurrentTextColor, CurrentBackColor);
 		
 		pStr ++;
 		
@@ -286,49 +280,7 @@ void ILI9341_DispString_EN (uint16_t usX ,uint16_t usY,  char * pStr )
 	}
 }
 
-/**
- * @brief  在 ILI9341 显示器上显示一个英文字符
- * @param  usX ：在特定扫描方向下字符的起始X坐标
- * @param  usY ：在特定扫描方向下该点的起始Y坐标
- * @param  cChar ：要显示的英文字符
- * @note 可使用LCD_SetBackColor、LCD_SetTextColor、LCD_SetColors函数设置颜色
- * @retval 无
- */
-void ILI9341_DispChar_EN ( uint16_t usX, uint16_t usY, const char cChar )
-{
-	uint8_t  byteCount, bitCount,fontLength;	
-	uint16_t ucRelativePositon;
-	uint8_t *Pfont;
-	
-	//对ascii码表偏移（字模表不包含ASCII表的前32个非图形符号）
-	ucRelativePositon = cChar - ' ';
-	
-	//每个字模的字节数
-	fontLength = (LCD_Currentfonts->Width*LCD_Currentfonts->Height)/8;
-		
-	//字模首地址
-	/*ascii码表偏移值乘以每个字模的字节数，求出字模的偏移位置*/
-	Pfont = (uint8_t *)&LCD_Currentfonts->table[ucRelativePositon * fontLength];
-	
-	//设置显示窗口
-	ILI9486_SetDispWin ( usX, usY, LCD_Currentfonts->Height, LCD_Currentfonts->Width);
-	
-	ILI9486_WriteCmd (0x2C);			
 
-	//按字节读取字模数据
-	//由于前面直接设置了显示窗口，显示数据会自动换行
-	for ( byteCount = 0; byteCount < fontLength; byteCount++ )
-	{
-		//一位一位处理要显示的颜色
-		for ( bitCount = 0; bitCount < 8; bitCount++ )
-		{
-			if ( Pfont[byteCount] & (0x80>>bitCount) )
-				ILI9486_WriteParam ( CurrentTextColor );			
-			else
-				ILI9486_WriteParam ( CurrentBackColor );
-		}	
-	}	
-}
 
 
 /*

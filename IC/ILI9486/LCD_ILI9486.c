@@ -487,6 +487,52 @@ uint16_t ILI9486_GetPixel(uint16_t _usX, uint16_t _usY)
     return (((R >> 11) << 11) | ((G >> 10 ) << 5) | (B >> 11));
 }
 
+
+/**
+ * @brief  在 ILI9341 显示器上显示一个英文字符
+ * @param  usX ：在特定扫描方向下字符的起始X坐标
+ * @param  usY ：在特定扫描方向下该点的起始Y坐标
+ * @param  usY ：在特定扫描方向下该点的起始Y坐标
+ * @param  cChar ：要显示的英文字符
+ * @note 
+ * @retval 无
+ */
+void ILI9486_DispChar_EN ( uint16_t usX, uint16_t usY, sFONT _sfont, const char cChar, uint16_t _textColor, uint16_t _backColor)
+{
+	uint8_t  byteCount, bitCount,fontLength;	
+	uint16_t ucRelativePositon;
+	uint8_t *Pfont;
+	
+	//对ascii码表偏移（字模表不包含ASCII表的前32个非图形符号）
+	ucRelativePositon = cChar - ' ';
+	
+	//每个字模的字节数
+	fontLength = (_sfont.Width*_sfont.Height)/8;
+		
+	//字模首地址
+	/*ascii码表偏移值乘以每个字模的字节数，求出字模的偏移位置*/
+	Pfont = (uint8_t *)&_sfont.table[ucRelativePositon * fontLength];
+	
+	//设置显示窗口
+	ILI9486_SetDispWin ( usX, usY, _sfont.Height, _sfont.Width);
+	
+	ILI9486_WriteCmd (0x2C);			
+
+	//按字节读取字模数据
+	//由于前面直接设置了显示窗口，显示数据会自动换行
+	for (byteCount = 0; byteCount < fontLength; byteCount++)
+	{
+		//一位一位处理要显示的颜色
+		for (bitCount = 0; bitCount < 8; bitCount++)
+		{
+			if (Pfont[byteCount] & (0x80>>bitCount))
+				ILI9486_RAM = _textColor;	
+			else
+				ILI9486_RAM = _backColor;	
+		}	
+	}	
+}
+
 /*
 *********************************************************************************************************
 *	函 数 名: ILI9486_DrawLine
