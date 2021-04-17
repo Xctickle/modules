@@ -5,7 +5,6 @@
 
 #include "modules.h"
 #include <stdbool.h>
-#include "stm32f4xx.h"
 #include "Common.h"
 
 #if defined(__CC_ARM  )
@@ -14,13 +13,13 @@
 
 /******************************** ESP8266 连接引脚定义 ***********************************/
 
-#define macESP8266_CH_PD_CLK_ENABLE()    		__GPIOE_CLK_ENABLE()
+#define macESP8266_CH_PD_CLK_ENABLE()    		__HAL_RCC_GPIOE_CLK_ENABLE()
 #define macESP8266_CH_PD_PORT			GPIOE
 #define macESP8266_CH_PD_PIN 			GPIO_PIN_2
 
-#define macESP8266_RST_CLK_ENABLE()    		__GPIOG_CLK_ENABLE()
-#define macESP8266_RST_PORT 			GPIOG
-#define macESP8266_RST_PIN  			GPIO_PIN_15
+#define macESP8266_RST_CLK_ENABLE()    		__HAL_RCC_GPIOA_CLK_ENABLE()
+#define macESP8266_RST_PORT 			GPIOA
+#define macESP8266_RST_PIN  			GPIO_PIN_4
 
 
 
@@ -30,18 +29,18 @@
 //引脚定义
 /*******************************************************/
 #define ESP8266_USART                             USART3
-#define ESP8266_USART_CLK_ENABLE()                __USART3_CLK_ENABLE();
+#define ESP8266_USART_CLK_ENABLE()                __HAL_RCC_USART3_CLK_ENABLE()
 
 #define RCC_PERIPHCLK_UARTx                      RCC_PERIPHCLK_USART3
 #define RCC_UARTxCLKSOURCE_SYSCLK                RCC_USART3CLKSOURCE_SYSCLK
 
 #define ESP8266_USART_RX_GPIO_PORT                GPIOB
-#define ESP8266_USART_RX_GPIO_CLK_ENABLE()        __GPIOA_CLK_ENABLE()
+#define ESP8266_USART_RX_GPIO_CLK_ENABLE()        __HAL_RCC_GPIOB_CLK_ENABLE()
 #define ESP8266_USART_RX_PIN                      GPIO_PIN_11
 #define ESP8266_USART_RX_AF                       GPIO_AF7_USART3
 
 #define ESP8266_USART_TX_GPIO_PORT                GPIOB
-#define ESP8266_USART_TX_GPIO_CLK_ENABLE()        __GPIOA_CLK_ENABLE()
+#define ESP8266_USART_TX_GPIO_CLK_ENABLE()        __HAL_RCC_GPIOB_CLK_ENABLE()
 #define ESP8266_USART_TX_PIN                      GPIO_PIN_10
 #define ESP8266_USART_TX_AF                       GPIO_AF7_USART3
 

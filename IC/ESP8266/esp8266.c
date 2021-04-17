@@ -68,7 +68,7 @@ static void ESP8266_GPIO_Config(void)
     /*设置引脚为上拉模式*/
     GPIO_InitStruct.Pull  = GPIO_PULLUP;
     /*设置引脚速率为高速 */   
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH; 
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH; 
     /*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
     HAL_GPIO_Init(macESP8266_CH_PD_PORT, &GPIO_InitStruct);	
 
@@ -105,6 +105,8 @@ void ESP8266_USART_Config(void)
     
  /*使能串口接收断 */
   __HAL_UART_ENABLE_IT(&ESP8266_UartHandle,UART_IT_RXNE);  
+  __HAL_UART_ENABLE_IT(&ESP8266_UartHandle,UART_IT_IDLE);  
+
 }
 
 
@@ -130,16 +132,15 @@ void ESP8266_HAL_UART_MspInit(UART_HandleTypeDef *huart)
   GPIO_InitStruct.Pin = ESP8266_USART_TX_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = ESP8266_USART_TX_AF;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(ESP8266_USART_TX_GPIO_PORT, &GPIO_InitStruct);
   
   /* 配置Rx引脚为复用功能 */
   GPIO_InitStruct.Pin = ESP8266_USART_RX_PIN;
-  GPIO_InitStruct.Alternate = ESP8266_USART_RX_AF;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_INPUT;	//模式要设置为复用输入模式！	
   HAL_GPIO_Init(ESP8266_USART_RX_GPIO_PORT, &GPIO_InitStruct); 
  
-  HAL_NVIC_SetPriority(ESP8266_USART_IRQ ,0,2);	//抢占优先级0，子优先级1
+  HAL_NVIC_SetPriority(ESP8266_USART_IRQ ,0,3);	//抢占优先级0，子优先级1
   HAL_NVIC_EnableIRQ(ESP8266_USART_IRQ );		    //使能USARTX1中断通道  
 }
 
