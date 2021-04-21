@@ -21,7 +21,7 @@
 
 
 //加入以下代码,支持printf函数,而不需要选择use MicroLIB
-#if 1
+#if 0
 #pragma import(__use_no_semihosting)             
 //标准库需要的支持函数                 
 struct __FILE 
@@ -46,7 +46,7 @@ int fputc(int ch, FILE *f)
 #endif 
 
 /*使用microLib的方法*/
- /* 
+ 
 int fputc(int ch, FILE *f)
 {
 	USART_SendData(USART1, (uint8_t) ch);
@@ -61,7 +61,7 @@ int GetKey (void)  {
 
     return ((int)(USART1->DR & 0x1FF));
 }
-*/
+
  
 u8 USART_RX_BUF[64];     //接收缓冲,最大64个字节.
 //接收状态

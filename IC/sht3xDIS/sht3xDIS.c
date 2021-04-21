@@ -1,8 +1,7 @@
            
            
 #include "sht3xDIS.h"
-#include "misc.h"
-#include "SoftwareI2C.h"
+
 
 
 static float temperature;
@@ -16,7 +15,7 @@ void sht3xDIS_Init(void)
 	humidity = -99;
 }
 
-uint8_t sht3xDIS_RHMeasure(void)
+uint8_t sht3xDIS_RHMeasure(int32_t *temperature, int32_t *humidity)
 { 
     uint8_t data_temp[2];
     uint8_t data_humi[2];
@@ -63,13 +62,11 @@ uint8_t sht3xDIS_RHMeasure(void)
 
     tmp = data_temp[0] << 8;
     tmp += data_temp[1];
-    humidity = (float)tmp * 1.0;
-	humidity = -45 + (175*humidity)/65535;
+	*temperature = -45 + (175*tmp)/65535;
 
     tmp = data_humi[0] << 8;
     tmp += data_humi[1];
-    temperature = (float)tmp * 1.0;
-	temperature = (100*temperature)/65535;
+	*humidity = (100*tmp)/65535;
 
     return TRUE;
 }
