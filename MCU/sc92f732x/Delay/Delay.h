@@ -13,6 +13,7 @@ void delay500us(void);
 void delay68us(void);
 void delay48us(void);
 void delay1us(void);
+void Delay_ms(uint16_t ms);
 
 #endif
 

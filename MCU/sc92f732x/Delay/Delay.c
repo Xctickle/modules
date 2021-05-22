@@ -87,7 +87,20 @@ void delay3ms()		//@24.000MHz
 }
 
 
-
+void Delay_ms(uint16_t ms)
+{
+	uint16_t i,j;
+	while(--ms)
+	{
+		i = 1000;
+		while(--i) 
+		{
+			j = 3;
+			while (--j);
+		}
+			
+	}
+}
 
 
 

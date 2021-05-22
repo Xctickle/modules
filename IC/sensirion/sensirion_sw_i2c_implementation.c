@@ -29,72 +29,101 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SENSIRION_I2C_H
-#define SENSIRION_I2C_H
-
 #include "sensirion_arch_config.h"
+#include "sensirion_sw_i2c_gpio.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-/**
- * Select the current i2c bus by index.
- * All following i2c operations will be directed at that bus.
+/*
+ * INSTRUCTIONS
+ * ============
  *
- * THE IMPLEMENTATION IS OPTIONAL ON SINGLE-BUS SETUPS (all sensors on the same
- * bus)
+ * Implement all functions where they are marked as IMPLEMENT.
+ * Follow the function specification in the comments.
  *
- * @param bus_idx   Bus index to select
- * @returns         0 on success, an error code otherwise
- */
-int16_t sensirion_i2c_select_bus(uint8_t bus_idx);
-
-/**
- * Initialize all hard- and software components that are needed for the I2C
- * communication.
- */
-void sensirion_i2c_init(void);
-
-/**
- * Release all resources initialized by sensirion_i2c_init().
- */
-void sensirion_i2c_release(void);
-
-/**
- * Execute one read transaction on the I2C bus, reading a given number of bytes.
- * If the device does not acknowledge the read command, an error shall be
- * returned.
+ * We use the following names for the two I2C signal lines:
+ * SCL for the clock line
+ * SDA for the data line
  *
- * @param address 7-bit I2C address to read from
- * @param data    pointer to the buffer where the data is to be stored
- * @param count   number of bytes to read from I2C and store in the buffer
- * @returns 0 on success, error code otherwise
+ * Both lines must be equipped with pull-up resistors appropriate to the bus
+ * frequency.
  */
-int8_t sensirion_i2c_read(uint8_t address, uint8_t* data, uint16_t count);
 
 /**
- * Execute one write transaction on the I2C bus, sending a given number of
- * bytes. The bytes in the supplied buffer must be sent to the given address. If
- * the slave device does not acknowledge any of the bytes, an error shall be
- * returned.
- *
- * @param address 7-bit I2C address to write to
- * @param data    pointer to the buffer containing the data to write
- * @param count   number of bytes to read from the buffer and send over I2C
- * @returns 0 on success, error code otherwise
+ * Initialize all hard- and software components that are needed to set the
+ * SDA and SCL pins.
  */
-int8_t sensirion_i2c_write(uint8_t address, const uint8_t* data,
-                           uint16_t count);
+void sensirion_init_pins(void) 
+{
+	InitI2C();
+}
+
+/**
+ * Release all resources initialized by sensirion_init_pins()
+ */
+void sensirion_release_pins(void) {
+    // IMPLEMENT or leave empty if no resources need to be freed
+}
+
+/**
+ * Configure the SDA pin as an input. With an external pull-up resistor the line
+ * should be left floating, without external pull-up resistor, the input must be
+ * configured to use the internal pull-up resistor.
+ */
+void sensirion_SDA_in(void) {
+    I2C_SDA_IN();
+    I2C_SDA_1();
+}
+
+/**
+ * Configure the SDA pin as an output and drive it low or set to logical false.
+ */
+void sensirion_SDA_out(void) {
+    // IMPLEMENT
+    I2C_SDA_OUT();
+    I2C_SDA_0();
+}
+
+/**
+ * Read the value of the SDA pin.
+ * @returns 0 if the pin is low and 1 otherwise.
+ */
+uint8_t sensirion_SDA_read(void) {
+    // IMPLEMENT
+    return I2C_SDA_READ();
+}
+
+/**
+ * Configure the SCL pin as an input. With an external pull-up resistor the line
+ * should be left floating, without external pull-up resistor, the input must be
+ * configured to use the internal pull-up resistor.
+ */
+void sensirion_SCL_in(void) {
+    // IMPLEMENT
+    I2C_SCL_IN();
+    I2C_SCL_1();
+}
+
+/**
+ * Configure the SCL pin as an output and drive it low or set to logical false.
+ */
+void sensirion_SCL_out(void) {
+    // IMPLEMENT
+    I2C_SCL_OUT();
+    I2C_SCL_0();
+}
+
+/**
+ * Read the value of the SCL pin.
+ * @returns 0 if the pin is low and 1 otherwise.
+ */
+uint8_t sensirion_SCL_read(void) {
+    // IMPLEMENT
+    return I2C_SCL_READ();
+}
 
 /**
  * Sleep for a given number of microseconds. The function should delay the
  * execution approximately, but no less than, the given time.
  *
- * When using hardware i2c:
- * Despite the unit, a <10 millisecond precision is sufficient.
- *
- * When using software i2c:
  * The precision needed depends on the desired i2c frequency, i.e. should be
  * exact to about half a clock cycle (defined in
  * `SENSIRION_I2C_CLOCK_PERIOD_USEC` in `sensirion_arch_config.h`).
@@ -103,10 +132,9 @@ int8_t sensirion_i2c_write(uint8_t address, const uint8_t* data,
  *
  * @param useconds the sleep time in microseconds
  */
-void sensirion_sleep_usec(uint32_t useconds);
+void sensirion_sleep_usec(uint32_t useconds) 
+{
+    uint16_t i;
 
-#ifdef __cplusplus
+	for (i = 0; i < useconds; i++);
 }
-#endif /* __cplusplus */
-
-#endif /* SENSIRION_I2C_H */

@@ -88,7 +88,7 @@ void uart0Init(void)
 	TL1 = 0xB2;		//设定定时初值
 	TH1 = 0xB2;		//设定定时器重装值
 	TR1 = 1;		 //启动Timer0
-	EUART = 1;	     //允许UART中断
+	// EUART = 1;	     //允许UART中断
 }
 
 
@@ -105,3 +105,17 @@ void uart0(void) interrupt 4
 		UartReceiveFlag = 1;
 	}	
 }
+
+char putchar(char ch)
+{
+    SBUF = ch;
+    while(TI == 0);
+    TI = 0;
+    return ch;
+}
+
+// char putchar (char c)  {
+//   while (!TI);
+//   TI = 0;
+//   return (SBUF = c);
+// }

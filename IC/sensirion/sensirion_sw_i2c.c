@@ -49,11 +49,11 @@ static int8_t sensirion_wait_while_clock_stretching(void) {
     return STATUS_FAIL;
 }
 
-static int8_t sensirion_i2c_write_byte(uint8_t data) {
+static int8_t sensirion_i2c_write_byte(uint8_t data_1) {
     int8_t nack, i;
     for (i = 7; i >= 0; i--) {
         sensirion_SCL_out();
-        if ((data >> i) & 0x01)
+        if ((data_1 >> i) & 0x01)
             sensirion_SDA_in();
         else
             sensirion_SDA_out();
@@ -78,14 +78,14 @@ static int8_t sensirion_i2c_write_byte(uint8_t data) {
 
 static uint8_t sensirion_i2c_read_byte(uint8_t ack) {
     int8_t i;
-    uint8_t data = 0;
+    uint8_t data_1 = 0;
     sensirion_SDA_in();
     for (i = 7; i >= 0; i--) {
         sensirion_sleep_usec(DELAY_USEC);
         sensirion_SCL_in();
         if (sensirion_wait_while_clock_stretching())
             return 0xFF;  // return 0xFF on error
-        data |= (sensirion_SDA_read() != 0) << i;
+        data_1 |= (sensirion_SDA_read() != 0) << i;
         sensirion_SCL_out();
     }
     if (ack)
@@ -100,7 +100,7 @@ static uint8_t sensirion_i2c_read_byte(uint8_t ack) {
     sensirion_SCL_out();
     sensirion_SDA_in();
 
-    return data;
+    return data_1;
 }
 
 static int8_t sensirion_i2c_start(void) {
@@ -124,7 +124,7 @@ static void sensirion_i2c_stop(void) {
     sensirion_sleep_usec(DELAY_USEC);
 }
 
-int8_t sensirion_i2c_write(uint8_t address, const uint8_t* data,
+int8_t sensirion_i2c_write(uint8_t address, const uint8_t* data_1,
                            uint16_t count) {
     int8_t ret;
     uint16_t i;
@@ -139,7 +139,7 @@ int8_t sensirion_i2c_write(uint8_t address, const uint8_t* data,
         return ret;
     }
     for (i = 0; i < count; i++) {
-        ret = sensirion_i2c_write_byte(data[i]);
+        ret = sensirion_i2c_write_byte(data_1[i]);
         if (ret != NO_ERROR) {
             sensirion_i2c_stop();
             break;
@@ -149,7 +149,7 @@ int8_t sensirion_i2c_write(uint8_t address, const uint8_t* data,
     return ret;
 }
 
-int8_t sensirion_i2c_read(uint8_t address, uint8_t* data, uint16_t count) {
+int8_t sensirion_i2c_read(uint8_t address, uint8_t* data_1, uint16_t count) {
     int8_t ret;
     uint8_t send_ack;
     uint16_t i;
@@ -165,7 +165,7 @@ int8_t sensirion_i2c_read(uint8_t address, uint8_t* data, uint16_t count) {
     }
     for (i = 0; i < count; i++) {
         send_ack = i < (count - 1); /* last byte must be NACK'ed */
-        data[i] = sensirion_i2c_read_byte(send_ack);
+        data_1[i] = sensirion_i2c_read_byte(send_ack);
     }
 
     sensirion_i2c_stop();

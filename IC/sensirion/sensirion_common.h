@@ -89,9 +89,9 @@ uint32_t sensirion_bytes_to_uint32_t(const uint8_t* bytes);
  */
 float sensirion_bytes_to_float(const uint8_t* bytes);
 
-uint8_t sensirion_common_generate_crc(const uint8_t* data, uint16_t count);
+uint8_t sensirion_common_generate_crc(const uint8_t* data_1, uint16_t count);
 
-int8_t sensirion_common_check_crc(const uint8_t* data, uint16_t count,
+int8_t sensirion_common_check_crc(const uint8_t* data_1, uint16_t count,
                                   uint8_t checksum);
 
 /**
@@ -122,12 +122,12 @@ uint16_t sensirion_fill_cmd_send_buf(uint8_t* buf, uint16_t cmd,
                                      const uint16_t* args, uint8_t num_args);
 
 /**
- * sensirion_i2c_read_words() - read data words from sensor
+ * sensirion_i2c_read_words() - read data_1 words from sensor
  *
  * @address:    Sensor i2c address
  * @data_words: Allocated buffer to store the read words.
  *              The buffer may also have been modified on STATUS_FAIL return.
- * @num_words:  Number of data words to read (without CRC bytes)
+ * @num_words:  Number of data_1 words to read (without CRC bytes)
  *
  * @return      NO_ERROR on success, an error code otherwise
  */
@@ -135,22 +135,22 @@ int16_t sensirion_i2c_read_words(uint8_t address, uint16_t* data_words,
                                  uint16_t num_words);
 
 /**
- * sensirion_i2c_read_words_as_bytes() - read data words as byte-stream from
+ * sensirion_i2c_read_words_as_bytes() - read data_1 words as byte-stream from
  *                                       sensor
  *
  * Read bytes without adjusting values to the uP's word-order.
  *
  * @address:    Sensor i2c address
- * @data:       Allocated buffer to store the read bytes.
+ * @data_1:       Allocated buffer to store the read bytes.
  *              The buffer may also have been modified on STATUS_FAIL return.
- * @num_words:  Number of data words(!) to read (without CRC bytes)
+ * @num_words:  Number of data_1 words(!) to read (without CRC bytes)
  *              Since only word-chunks can be read from the sensor the size
  *              is still specified in sensor-words (num_words = num_bytes *
  *              SENSIRION_WORD_SIZE)
  *
  * @return      NO_ERROR on success, an error code otherwise
  */
-int16_t sensirion_i2c_read_words_as_bytes(uint8_t address, uint8_t* data,
+int16_t sensirion_i2c_read_words_as_bytes(uint8_t address, uint8_t* data_1,
                                           uint16_t num_words);
 
 /**
@@ -167,8 +167,8 @@ int16_t sensirion_i2c_write_cmd(uint8_t address, uint16_t command);
  *                                       sensor
  * @address:    Sensor i2c address
  * @command:    Sensor command
- * @data:       Argument buffer with words to send
- * @num_words:  Number of data words to send (without CRC bytes)
+ * @data_1:       Argument buffer with words to send
+ * @num_words:  Number of data_1 words to send (without CRC bytes)
  *
  * @return      NO_ERROR on success, an error code otherwise
  */
@@ -178,11 +178,11 @@ int16_t sensirion_i2c_write_cmd_with_args(uint8_t address, uint16_t command,
 
 /**
  * sensirion_i2c_delayed_read_cmd() - send a command, wait for the sensor to
- *                                    process and read data back
+ *                                    process and read data_1 back
  * @address:    Sensor i2c address
  * @cmd:        Command
  * @delay:      Time in microseconds to delay sending the read request
- * @data_words: Allocated buffer to store the read data
+ * @data_words: Allocated buffer to store the read data_1
  * @num_words:  Data words to read (without CRC bytes)
  *
  * @return      NO_ERROR on success, an error code otherwise
@@ -191,11 +191,11 @@ int16_t sensirion_i2c_delayed_read_cmd(uint8_t address, uint16_t cmd,
                                        uint32_t delayus, uint16_t* data_words,
                                        uint16_t num_words);
 /**
- * sensirion_i2c_read_cmd() - reads data words from the sensor after a command
+ * sensirion_i2c_read_cmd() - reads data_1 words from the sensor after a command
  *                            is issued
  * @address:    Sensor i2c address
  * @cmd:        Command
- * @data_words: Allocated buffer to store the read data
+ * @data_words: Allocated buffer to store the read data_1
  * @num_words:  Data words to read (without CRC bytes)
  *
  * @return      NO_ERROR on success, an error code otherwise
