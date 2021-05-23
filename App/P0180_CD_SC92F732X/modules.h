@@ -55,43 +55,31 @@ typedef unsigned long     uint32_t;
 // #include "sensirion_i2c.h"
 
 
+#define ENABLE_INT()	EA = 1
+#define DISABLE_INT()	EA = 0
+#define NOP()			_nop_()		
 
 
-
-
-/* C51_I2C宏 */
-#define I2C_C51
-#define I2C_DELAY     200				/* I2C总线位延迟，最快400KHz */
-
-#define I2C_SCL_PIN		P17			/* 连接到SCL时钟线的GPIO */
-#define I2C_SDA_PIN		P16			/* 连接到SDA数据线的GPIO */
-#define I2C_SCL_IN()    P1CON &= ~0x80
-#define I2C_SCL_OUT()   P1CON |= 0x80
-#define I2C_SDA_IN()    P1CON &= ~0x40
-#define I2C_SDA_OUT()   P1CON |= 0x40
-
+/* SC92F_I2C宏 */
+#define I2C_SC92F
+#define I2C_DELAY     200				            /* uint16 I2C总线位延迟，最快400KHz */
+#define I2C_SCL_PIN		P17							/* 连接到SCL时钟线的GPIO */
+#define I2C_SDA_PIN		P16							/* 连接到SDA数据线的GPIO */
 #define I2C_SCL_1()  I2C_SCL_PIN = 1				/* SCL = 1 */
 #define I2C_SCL_0()  I2C_SCL_PIN = 0			 	/* SCL = 0 */
 #define I2C_SDA_1()  I2C_SDA_PIN = 1				/* SDA = 1 */
 #define I2C_SDA_0()  I2C_SDA_PIN = 0			 	/* SDA = 0 */
-
 #define I2C_SDA_READ()  I2C_SDA_PIN					/* 读SDA口线状态 */
 #define I2C_SCL_READ()  I2C_SCL_PIN					/* 读SCL口线状态 */
-
-#define IC_DS18B20
-#ifdef IC_DS18B20
-	#define	DQ2_SET() 	 		P20 = 1
-	#define	DQ2_CLR()	 		P20 = 0
-	#define	DQ2_RED()  	 		P20
-	#define DQ2_IN()            P2CON &= ~0x01
-	#define DQ2_OUT()           P2CON |= 0x01
-#endif
+#define I2C_IO_INIT()    P1PH &= 0xC0               /* 1100 0000 p17、p16取消上拉电阻 */
+#define I2C_SCL_IN()    P1CON &= ~0x80              /* 输入模式 */
+#define I2C_SCL_OUT()   P1CON |= 0x80               /* 输出模式 */
+#define I2C_SDA_IN()    P1CON &= ~0x40
+#define I2C_SDA_OUT()   P1CON |= 0x40
 
 
 
-#define ENABLE_INT()	EA = 1
-#define DISABLE_INT()	EA = 0
-#define NOP()			_nop_()					
+			
 
 
 #if 0	/* 1表示使能调试语句， 0 表示不参与编译，不会影响编译结果 */

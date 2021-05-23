@@ -23,11 +23,9 @@
 #include "SoftwareI2C.h"
 
 
-static void I2CBusEnter(void);
-static void I2CBusExit(void);
+
 static void i2c_Delay(void);
 
-static uint8_t g_i2c_busy = 0;
 
 /*
 *********************************************************************************************************
@@ -55,9 +53,8 @@ void InitI2C(void)
 	GPIO_Init(GPIO_PORT_I2C_SDA, I2C_SDA_PIN, GPIO_MODE_OUT_OD_HIZ_FAST); /* 设为开漏模式 */
 	#endif
 
-	#ifdef I2C_C51
-	I2C_SCL_OUT();
-	I2C_SDA_OUT();
+	#ifdef I2C_SC92F
+	I2C_IO_INIT();
 	#endif
 
 	/* 给一个停止信号, 复位I2C总线上的所有设备到待机模式 */
@@ -74,11 +71,11 @@ void InitI2C(void)
 */
 static void i2c_Delay(void)
 {
-	uint8_t i;
+	uint16_t i;
 
 	for (i = 0; i < I2C_DELAY; i++)
 	{
-    	_nop_(); 	
+    	NOP(); 	
 	}
 }
 /*
@@ -91,15 +88,14 @@ static void i2c_Delay(void)
 */
 void i2c_Start(void)
 {
-	I2CBusEnter();
-	
+	I2C_SCL_OUT();
+	I2C_SDA_OUT();
 	/* 当SCL高电平时，SDA出现一个下跳沿表示I2C总线启动信号 */
 	I2C_SDA_1();
 	I2C_SCL_1();
 	i2c_Delay();
 	I2C_SDA_0();
 	i2c_Delay();
-	
 	I2C_SCL_0();
 	i2c_Delay();
 }
@@ -114,14 +110,14 @@ void i2c_Start(void)
 */
 void i2c_Stop(void)
 {
+	I2C_SCL_OUT();
+	I2C_SDA_OUT();
 	/* 当SCL高电平时，SDA出现一个上跳沿表示I2C总线停止信号 */
 	I2C_SDA_0();
 	I2C_SCL_1();
 	i2c_Delay();
 	I2C_SDA_1();
 	i2c_Delay();
-	
-	I2CBusExit();
 }
 
 /*
@@ -135,9 +131,6 @@ void i2c_Stop(void)
 void i2c_SendByte(uint8_t _ucByte)
 {
 	uint8_t i;
-
-	I2C_SCL_OUT();
-	I2C_SDA_OUT();
 
 	/* 先发送字节的高位bit7 */
 	for (i = 0; i < 8; i++)
@@ -176,7 +169,6 @@ uint8_t i2c_ReadByte(void)
 	uint8_t i;
 	uint8_t value;
 
-	I2C_SCL_OUT();
 	I2C_SDA_IN();
 
 	/* 读到第1个bit为数据的bit7 */
@@ -211,7 +203,6 @@ uint8_t i2c_WaitAck(void)
 {
 	uint8_t re;
 
-	I2C_SCL_OUT();
 	I2C_SDA_IN();
 
 	I2C_SDA_1();	/* CPU释放SDA总线 */
@@ -283,6 +274,10 @@ uint8_t i2c_CheckDevice(uint8_t _Address)
 {
 	uint8_t ucAck;
 
+	I2C_SDA_IN();
+	I2C_SCL_IN();
+
+
 	if (I2C_SDA_READ() && I2C_SCL_READ())
 	{
 		i2c_Start();		/* 发送启动信号 */
@@ -298,41 +293,3 @@ uint8_t i2c_CheckDevice(uint8_t _Address)
 	return 1;	/* I2C总线异常 */
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名: I2CBusEnter
-*	功能说明: 占用I2C总线
-*	形    参: 无
-*	返 回 值: 0 表示不忙  1表示忙
-*********************************************************************************************************
-*/
-static void I2CBusEnter(void)
-{
-	g_i2c_busy = 1;
-}
-
-/*
-*********************************************************************************************************
-*	函 数 名: I2CBusExit
-*	功能说明: 释放占用的I2C总线
-*	形    参: 无
-*	返 回 值: 0 表示不忙  1表示忙
-*********************************************************************************************************
-*/
-static void I2CBusExit(void)
-{
-	g_i2c_busy = 0;
-}
-
-/*
-*********************************************************************************************************
-*	函 数 名: I2CBusBusy
-*	功能说明: 判断I2C总线忙。方法是检测其他SPI芯片的片选信号是否为1
-*	形    参: 无
-*	返 回 值: 0 表示不忙  1表示忙
-*********************************************************************************************************
-*/
-uint8_t I2CBusBusy(void)
-{
-	return g_i2c_busy;
-}
