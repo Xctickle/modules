@@ -35,6 +35,7 @@
 int32_t temperature, humidity;
 uint16_t CO2, TVOC;
 float absolutehumidity;
+uint16_t level,pwm;
 
 
 void GPIO_Config(void)
@@ -46,29 +47,88 @@ void GPIO_Config(void)
 
 void PWM_Init(void)
 {
-	PWMCON  = 0x3A;		//PWM输出到IO，PWM时钟为Fsys/4
-	PWMPRD  = 59;		//PWM周期=(59+1)*(1/6us)=10us	;
-	PWMCFG  = 0x00;		//PWM输出不反向,PWM2输出至P02
- 	// PWMDTY0 = 30;		//PWM0的Duty = 30/60 =1/2
-	// PWMDTY1 = 15;       //PWM0的Duty = 15/60 =1/4
-	PWMDTY2 = 4;       //PWM0的Duty = 10/60 =1/6
-	PWMDTYA = 0x00;
-	PWMCON |= 0x80;     //开启PWM
-
-	// PWMCON  = 0x38;		//PWM输出到IO，PWM时钟为Fsys/4, 
-	// // PWMPRD  = 59;		//PWM周期=(59+1)*(1/6us)=10us
-	// // PWMCON  = 0x23;		//PWM2输出到IO，PWM时钟为Fsys/8
-	// PWMPRD  = 250;		//PWM周期=(59+1)*(1/256us)=10us
+	// PWMCON  = 0x3A;		//PWM输出到IO，PWM时钟为Fsys/4
+	// PWMPRD  = 59;		//PWM周期=(59+1)*(1/6us)=10us	;
 	// PWMCFG  = 0x00;		//PWM输出不反向,PWM2输出至P02
  	// // PWMDTY0 = 30;		//PWM0的Duty = 30/60 =1/2
 	// // PWMDTY1 = 15;       //PWM0的Duty = 15/60 =1/4
-	// PWMDTY2 = 150;       //PWM0的Duty = 10/60 =1/6
+	// PWMDTY2 = 4;       //PWM0的Duty = 10/60 =1/6
 	// PWMDTYA = 0x00;
 	// PWMCON |= 0x80;     //开启PWM
+
+	PWMCON  = 0x38;		//PWM输出到IO，PWM时钟为Fsys/1, 
+	PWMPRD  = 249;		//PWM周期=(249+1)*(1/24us)=10.41us， 1/10.41=96kHz
+	PWMCFG  = 0x00;		//PWM输出不反向,PWM2输出至P02
+	PWMDTY2 = 150;       //PWM0的Duty = 10/60 =1/6
+	PWMDTYA = 0x00;
+	PWMCON |= 0x80;     //开启PWM
+}
+
+/**
+  * @brief  将采样值的映射到屏幕的显示范围
+  * @param  val：待映射的值
+  * @param  rangeMax：当前值的最大值
+  * @param  rangeMin：当前值的最小值
+  * @param  rangeMaxNew：映射最大值
+  * @param  rangeMinNew：映射最小值
+  * @retval 映射后的值
+  */
+uint32_t DataRemap(uint32_t val, uint32_t rangeMax, uint32_t rangeMin, uint32_t rangeMaxNew, uint32_t rangeMinNew)
+{
+	uint32_t result = 0;
+    if (val > rangeMax)
+        val = rangeMax;
+    else if (val < rangeMin)
+        val = rangeMin;
+
+    // result = (uint32_t)(val * (uint16_t)(rangeMaxNew - rangeMinNew));
+    // result = 300*100;
+    // result = 3000*100;
+    // result = 30000*100;
+
+    // result = result / (rangeMax - rangeMin);
+    // result = rangeMinNew + result;
+
+    result = rangeMinNew + val * (rangeMaxNew - rangeMinNew) / (rangeMax - rangeMin);
+
+    return result;
+}
+
+uint8_t Check_level(uint16_t _tvoc)
+{
+    if (_tvoc < 100)
+    {
+        return 1;
+    }
+    else if (_tvoc < 800)
+    {
+        return _tvoc/50;
+    }
+    else if (_tvoc < 1000)
+    {
+        return _tvoc/100+8;
+    }   
+    else if (_tvoc < 1400)
+    {
+        return _tvoc/200+13;
+    }
+    else if (_tvoc < 2400)
+    {
+        return _tvoc/100+6;
+    }
+    else if (_tvoc < 16400)
+    {
+        return _tvoc/200+18;
+    }
+    else 
+    {
+        return 99;
+    }
 }
 
 void main(void)
 {
+
   	GPIO_Config();
     uart0Init();
     sht3xDIS_Init();
@@ -79,51 +139,31 @@ void main(void)
 	ENABLE_INT();
 
 
-
     while (1)
     {
 		SGPC3_measure(&CO2,&TVOC);
 
-		if (TVOC > 4001)
-		{
-			LEVEL_10();	
-		}
-		else if (TVOC > 3501)
-		{
-			LEVEL_9();	
-		}
-		else if (TVOC > 3001)
-		{
-			LEVEL_8();	
-		}		
-		else if (TVOC > 2501)
-		{
-			LEVEL_7();	
-		}		
-		else if (TVOC > 2001)
-		{
-			LEVEL_6();	
-		}
-		else if (TVOC > 1501)
-		{
-			LEVEL_5();	
-		}
-		else if (TVOC > 1001)
-		{
-			LEVEL_4();	
-		}
-		else if (TVOC > 501)
-		{
-			LEVEL_3();	
-		}
-		else if (TVOC > 251)
-		{
-			LEVEL_2();	
-		}
-		else
-		{
-			LEVEL_1();	
-		}
+		// TVOC = 0;
+		// level = DataRemap(TVOC,60000,0,100,0);
+        level = Check_level(TVOC);
+        // level = 5;
+		pwm = DataRemap(level,100,0,163,1);
+        if (level < 10)
+        {
+            pwm += 6;
+        }
+		else if (level < 25)
+        {
+            pwm += 5;
+        }
+   		else if (level > 60)
+        {
+            pwm -= 5;
+        }
+
+		PWMDTY2 = pwm;
+
+	    printf("level: %u , PWMDTY2: %u \r\n ", level , pwm);
 
         if(sht3xDIS_RHMeasure(&temperature,&humidity))
         {
@@ -141,87 +181,3 @@ void main(void)
     }
     
 }
-
-// void main(void) 
-// {
-//     int8_t ret;
-//     int32_t err;
-    
-//   	GPIO_Config();
-//     // uart0Init();
-
-//     /* Initialize the i2c bus for the current platform */
-//     sensirion_i2c_init();
-
-//     /* Busy loop for initialization, because the main loop does not work without
-//      * a sensor.
-//      */
-//     while (sht3x_probe() != STATUS_OK) 
-//     {
-//         /* printf("SHT sensor probing failed\n"); */
-//     }
-//     /* printf("SHT sensor probing successful\n"); */
-
-//     /* Busy loop for initialization. The main loop does not work without
-//      * a sensor. */
-//     while (sgp30_probe() != STATUS_OK) 
-//     {
-//         // printf("SGP sensor probing failed\n");
-//     }
-//     // printf("SGP sensor probing successful\n");
-
-//     /* Consider the two cases (A) and (B):
-//      * (A) If no baseline is available or the most recent baseline is more than
-//      *     one week old, it must discarded. A new baseline is found with
-//      *     sgp30_iaq_init() */
-//     err = sgp30_iaq_init();
-//     if (err == STATUS_OK) 
-//     {
-//         // printf("sgp30_iaq_init done\n");
-//     } 
-//     else 
-//     {
-//         // printf("sgp30_iaq_init failed!\n");
-//     }
-//     /* (B) If a recent baseline is available, set it after sgp30_iaq_init() for
-//      * faster start-up */
-//     /* IMPLEMENT: retrieve iaq_baseline from presistent storage;
-//      * err = sgp30_set_iaq_baseline(iaq_baseline);
-//      */
-
-//     while (1) 
-//     {
-//         /* Measure temperature and relative humidity and store into variables
-//          * temperature, humidity (each output multiplied by 1000).
-//          */
-//         ret = sht3x_measure_blocking_read(&temperature, &humidity);
-//         if (ret == STATUS_OK) 
-//         {
-//             // printf("measured temperature: %0.2f degreeCelsius, "
-//             //           "measured humidity: %0.2f percentRH\n",
-//             //           temperature / 1000.0f,
-//             //           humidity / 1000.0f);
-//         }
-//         else 
-//         {
-//             // printf("error reading measurement\n");
-//         }
-
-//         err = sgp30_measure_iaq_blocking_read(&tvoc_ppb, &co2_eq_ppm);
-//         if (err == STATUS_OK) 
-//         {
-//             // printf("tVOC  Concentration: %dppb\n", tvoc_ppb);
-//             // printf("CO2eq Concentration: %dppm\n", co2_eq_ppm);
-//         } 
-//         else 
-//         {
-//             // printf("error reading IAQ values\n");
-//         }
-
-
-//         Delay_ms(500);
-//     }
-
-
-// }
-
